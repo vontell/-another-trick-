@@ -1,25 +1,30 @@
 {
-  "name": "nodejs",
-  "version": "1.0.0",
-  "description": "An advanced example of how to customize movements, place blocks, and craft items with the rg-bot package.",
-  "main": "index.js",
+  "name": "cryptic-maze",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cryptic Maze — a word/trivia maze game inspired by crosswords and roguelike maps.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "validate": "tsx scripts/validateLevels.ts"
   },
-  "keywords": [],
-  "author": "Regression Games, Inc",
-  "license": "ISC",
   "dependencies": {
-    "@types/node": "^18.0.6",
-    "minecraft-data": "^3.17.0",
-    "mineflayer": "^4.5.1",
-    "mineflayer-pathfinder": "^2.4.0",
-    "node-fetch": "^3.2.6",
-    "prismarine-entity": "^2.1.1",
-    "prismarine-item": "^1.11.5",
-    "prismarine-viewer": "^1.23.0",
-    "rg-bot": "^1.0.1",
-    "rg-match-info": "^1.0.0",
-    "vec3": "^0.1.7"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
   }
 }
