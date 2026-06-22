@@ -118,6 +118,33 @@ export function validateLevel(level: Level): string[] {
     }
   }
 
+  // Bridge variety: the guaranteed pair should differ as you progress, not be
+  // the same bigram everywhere. No single bigram may be the bridge for more
+  // than MAX_SAME_BRIDGE rooms, and the level must use a good spread overall.
+  const MAX_SAME_BRIDGE = 6;
+  const MIN_DISTINCT_BRIDGES = 8;
+  const allAnswers = level.rooms.map((r) => r.answer);
+  const bridgeUse = new Map<string, number>();
+  for (const r of level.rooms) {
+    if (r.id === level.finalRoomId) continue;
+    const successors = r.next.map((id) => byId.get(id)).filter(Boolean) as Room[];
+    const b = pickBridge(r, successors, allAnswers);
+    if (b) bridgeUse.set(b.text, (bridgeUse.get(b.text) ?? 0) + 1);
+  }
+  for (const [text, count] of bridgeUse) {
+    if (count > MAX_SAME_BRIDGE) {
+      errors.push(
+        `bridge "${text}" is reused by ${count} rooms (max ${MAX_SAME_BRIDGE}); ` +
+          'vary the answers so different depths guarantee different letter pairs',
+      );
+    }
+  }
+  if (bridgeUse.size > 0 && bridgeUse.size < MIN_DISTINCT_BRIDGES) {
+    errors.push(
+      `only ${bridgeUse.size} distinct bridge pairs in the level (need >= ${MIN_DISTINCT_BRIDGES})`,
+    );
+  }
+
   for (const id of level.startRoomIds) {
     if (!byId.has(id)) errors.push(`startRoomId "${id}" does not exist`);
   }
