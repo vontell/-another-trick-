@@ -616,4 +616,326 @@ export const LEVEL_2: Level = {
   },
 };
 
-export const LEVELS: Level[] = [LEVEL_1, LEVEL_2];
+/**
+ * Level 3 — "The Wordsmith's Gauntlet"
+ *
+ * 30 rooms across 11 depths — a genuine general-knowledge crossword with a mix
+ * of single-word and multi-word answers (stored spaceless, with an
+ * `enumeration` giving the word lengths). The clues are straight, definitional
+ * crossword clues, not cryptic.
+ *
+ * Every answer in the grid contains the "EA" bigram, so each room always shares
+ * its guaranteed 2-letter bridge with all of its successors while never
+ * repeating an answer.
+ *
+ * The eight blue letters scattered across the depths anagram to SEA SHORE.
+ */
+
+const rooms3: Room[] = [
+  // ── Depth 0 — starts ───────────────────────────────────────────────
+  {
+    id: 'm0',
+    clue: 'Tiny upright-swimming fish whose males carry the young',
+    answer: 'SEAHORSE',
+    next: ['m3', 'm4'],
+    row: 0,
+    col: 1,
+  },
+  {
+    id: 'm1',
+    clue: 'Body of water Moses is said to have parted (3,3)',
+    answer: 'REDSEA',
+    enumeration: [3, 3],
+    next: ['m4', 'm5'],
+    row: 0,
+    col: 3,
+    powerUp: 'reveal',
+  },
+  {
+    id: 'm2',
+    clue: 'Small porous sachet you steep in hot water for a brew (3,3)',
+    answer: 'TEABAG',
+    enumeration: [3, 3],
+    next: ['m5'],
+    row: 0,
+    col: 5,
+  },
+
+  // ── Depth 1 ────────────────────────────────────────────────────────
+  {
+    id: 'm3',
+    clue: 'Glacial period when much of the Earth was frozen (3,3)',
+    answer: 'ICEAGE',
+    enumeration: [3, 3],
+    next: ['m6', 'm7'],
+    row: 1,
+    col: 1,
+    metaLetterIndex: 3, // A
+  },
+  {
+    id: 'm4',
+    clue: 'Marine algae that washes up along the beach',
+    answer: 'SEAWEED',
+    next: ['m6', 'm7'],
+    row: 1,
+    col: 3,
+    metaLetterIndex: 0, // S
+  },
+  {
+    id: 'm5',
+    clue: 'Small floppy-eared hound bred to hunt by scent',
+    answer: 'BEAGLE',
+    next: ['m7', 'm8'],
+    row: 1,
+    col: 5,
+  },
+
+  // ── Depth 2 ────────────────────────────────────────────────────────
+  {
+    id: 'm6',
+    clue: 'Throbbing pain in the head',
+    answer: 'HEADACHE',
+    next: ['m9', 'm10'],
+    row: 2,
+    col: 1,
+    metaLetterIndex: 1, // E
+  },
+  {
+    id: 'm7',
+    clue: 'Sweet frozen dairy dessert served in a cone (3,5)',
+    answer: 'ICECREAM',
+    enumeration: [3, 5],
+    next: ['m9', 'm10'],
+    row: 2,
+    col: 3,
+    powerUp: 'reveal',
+  },
+  {
+    id: 'm8',
+    clue: 'Bird famed for its iridescent fan of tail feathers',
+    answer: 'PEACOCK',
+    next: ['m10', 'm11'],
+    row: 2,
+    col: 5,
+    metaLetterIndex: 4, // O
+  },
+
+  // ── Depth 3 ────────────────────────────────────────────────────────
+  {
+    id: 'm9',
+    clue: 'Prolonged spell of unusually hot weather (4,4)',
+    answer: 'HEATWAVE',
+    enumeration: [4, 4],
+    next: ['m12', 'm13'],
+    row: 3,
+    col: 1,
+  },
+  {
+    id: 'm10',
+    clue: 'Household chemical used to whiten and disinfect',
+    answer: 'BLEACH',
+    next: ['m12', 'm13'],
+    row: 3,
+    col: 3,
+  },
+  {
+    id: 'm11',
+    clue: 'One who instructs pupils in a classroom',
+    answer: 'TEACHER',
+    next: ['m13', 'm14'],
+    row: 3,
+    col: 5,
+    metaLetterIndex: 1, // E
+  },
+
+  // ── Depth 4 ────────────────────────────────────────────────────────
+  {
+    id: 'm12',
+    clue: 'The floor of the ocean (3,3)',
+    answer: 'SEABED',
+    enumeration: [3, 3],
+    next: ['m15', 'm16'],
+    row: 4,
+    col: 1,
+  },
+  {
+    id: 'm13',
+    clue: 'Painful inflammation of the inner or outer ear',
+    answer: 'EARACHE',
+    next: ['m15', 'm16'],
+    row: 4,
+    col: 3,
+    powerUp: 'reveal',
+  },
+  {
+    id: 'm14',
+    clue: 'Fish and shellfish eaten as a meal (3,4)',
+    answer: 'SEAFOOD',
+    enumeration: [3, 4],
+    next: ['m16', 'm17'],
+    row: 4,
+    col: 5,
+  },
+
+  // ── Depth 5 ────────────────────────────────────────────────────────
+  {
+    id: 'm15',
+    clue: 'Big colourful inflatable toy bounced at the seaside (5,4)',
+    answer: 'BEACHBALL',
+    enumeration: [5, 4],
+    next: ['m18', 'm19'],
+    row: 5,
+    col: 1,
+    powerUp: 'reveal',
+  },
+  {
+    id: 'm16',
+    clue: 'Stretch out an arm to grasp something',
+    answer: 'REACH',
+    next: ['m18', 'm19'],
+    row: 5,
+    col: 3,
+  },
+  {
+    id: 'm17',
+    clue: 'The datum from which altitudes are measured (3,5)',
+    answer: 'SEALEVEL',
+    enumeration: [3, 5],
+    next: ['m19', 'm20'],
+    row: 5,
+    col: 5,
+  },
+
+  // ── Depth 6 ────────────────────────────────────────────────────────
+  {
+    id: 'm18',
+    clue: 'Organ that pumps blood around the body',
+    answer: 'HEART',
+    next: ['m21', 'm22'],
+    row: 6,
+    col: 1,
+  },
+  {
+    id: 'm19',
+    clue: 'Lustrous gem formed inside an oyster',
+    answer: 'PEARL',
+    next: ['m21', 'm22'],
+    row: 6,
+    col: 3,
+    metaLetterIndex: 3, // R
+  },
+  {
+    id: 'm20',
+    clue: 'Growth of hair on a man’s chin and cheeks',
+    answer: 'BEARD',
+    next: ['m22', 'm23'],
+    row: 6,
+    col: 5,
+  },
+
+  // ── Depth 7 ────────────────────────────────────────────────────────
+  {
+    id: 'm21',
+    clue: 'A single pulse of the cardiac muscle (5,4)',
+    answer: 'HEARTBEAT',
+    enumeration: [5, 4],
+    next: ['m24', 'm25'],
+    row: 7,
+    col: 1,
+    metaLetterIndex: 0, // H
+  },
+  {
+    id: 'm22',
+    clue: 'Afternoon social gathering for a hot brew (3,5)',
+    answer: 'TEAPARTY',
+    enumeration: [3, 5],
+    next: ['m24', 'm25'],
+    row: 7,
+    col: 3,
+    powerUp: 'reveal',
+  },
+  {
+    id: 'm23',
+    clue: 'Long pole with a pointed tip, thrown as a weapon',
+    answer: 'SPEAR',
+    next: ['m25', 'm26'],
+    row: 7,
+    col: 5,
+  },
+
+  // ── Depth 8 ────────────────────────────────────────────────────────
+  {
+    id: 'm24',
+    clue: 'Do something once more',
+    answer: 'REPEAT',
+    next: ['m27', 'm28'],
+    row: 8,
+    col: 1,
+  },
+  {
+    id: 'm25',
+    clue: 'Small spoon for stirring a hot drink (3,5)',
+    answer: 'TEASPOON',
+    enumeration: [3, 5],
+    next: ['m27', 'm28'],
+    row: 8,
+    col: 3,
+    metaLetterIndex: 3, // S
+  },
+  {
+    id: 'm26',
+    clue: 'Cereal grain ground into flour for bread',
+    answer: 'WHEAT',
+    next: ['m28'],
+    row: 8,
+    col: 5,
+  },
+
+  // ── Depth 9 ────────────────────────────────────────────────────────
+  {
+    id: 'm27',
+    clue: 'Consumed, as a finished meal',
+    answer: 'EATEN',
+    next: ['m29'],
+    row: 9,
+    col: 2,
+  },
+  {
+    id: 'm28',
+    clue: 'Long-tailed game bird shot in the autumn',
+    answer: 'PHEASANT',
+    next: ['m29'],
+    row: 9,
+    col: 4,
+    powerUp: 'reveal',
+  },
+
+  // ── Depth 10 — final (hardest) ─────────────────────────────────────
+  {
+    id: 'm29',
+    clue: 'Blissful paradise; the abode of the righteous in many faiths',
+    answer: 'HEAVEN',
+    next: [],
+    row: 10,
+    col: 3,
+    isFinal: true,
+  },
+];
+
+export const LEVEL_3: Level = {
+  id: 'level-3',
+  title: "The Wordsmith's Gauntlet",
+  subtitle: 'A full crossword of single and multi-word answers, then the meta.',
+  rooms: rooms3,
+  startRoomIds: ['m0', 'm1', 'm2'],
+  finalRoomId: 'm29',
+  meta: {
+    answer: 'SEASHORE',
+    enumeration: [3, 5],
+    prompt:
+      'Gather every blue letter (no single path holds them all) and rearrange the eight into a two-word phrase: where the land meets the tide. (3,5)',
+    hint: "An anagram of the blue letters — it's where you'd build a sandcastle.",
+  },
+};
+
+export const LEVELS: Level[] = [LEVEL_1, LEVEL_2, LEVEL_3];

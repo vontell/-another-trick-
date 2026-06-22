@@ -10,6 +10,12 @@ export interface Room {
   clue: string;
   /** The answer, uppercase, letters only. Its length is the number of squares. */
   answer: string;
+  /**
+   * Word lengths for a multi-word answer, e.g. [3, 3] for "ICE AGE" (whose
+   * answer is stored as "ICEAGE"). Must sum to answer.length. Drives the gaps
+   * in the grid and the "(3,3)" enumeration. Omit for a single word.
+   */
+  enumeration?: number[];
   /** IDs of rooms that open when this room is solved. */
   next: string[];
   /** Layout: column index (for map rendering). */
@@ -49,6 +55,8 @@ export interface Level {
   meta: {
     /** The meta answer, uppercase, letters only. */
     answer: string;
+    /** Word lengths for a multi-word meta answer (sums to answer.length). */
+    enumeration?: number[];
     /** Prompt/theme shown for the meta puzzle (it has no clue of its own). */
     prompt: string;
     /** Optional softer hint. */

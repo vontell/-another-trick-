@@ -64,10 +64,11 @@ export default function MapView({ game, onOpenRoom }: Props) {
         const collected = game.progress.collected.some((c) => c.roomId === r.id);
 
         const base =
-          'absolute -translate-x-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full border-2 text-lg font-bold transition';
+          'absolute z-10 -translate-x-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full border-2 text-lg font-bold transition';
+        // Opaque fills so the (center-to-center) edges never show through nodes.
         const look =
           st === 'solved'
-            ? 'border-good bg-good/20 text-good'
+            ? 'border-good bg-[#15291f] text-good'
             : st === 'available'
               ? 'border-accent bg-panel2 text-accent shadow-[0_0_18px_rgba(110,168,254,0.45)] hover:scale-105'
               : 'border-edge bg-panel text-white/25';

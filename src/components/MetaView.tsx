@@ -94,7 +94,12 @@ export default function MetaView({ game, onClose }: Props) {
           </div>
 
           <div className="my-4">
-            <AnswerInput length={meta.answer.length} value={value} status={status} />
+            <AnswerInput
+              length={meta.answer.length}
+              value={value}
+              enumeration={meta.enumeration}
+              status={status}
+            />
           </div>
 
           {status === 'wrong' && (

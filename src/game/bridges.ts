@@ -4,6 +4,11 @@ export function normalize(s: string): string {
   return s.toUpperCase().replace(/[^A-Z]/g, '');
 }
 
+/** Crossword-style enumeration, e.g. [3,3] -> "(3,3)", undefined -> "(6)". */
+export function enumerationText(answer: string, enumeration?: number[]): string {
+  return `(${(enumeration ?? [answer.length]).join(',')})`;
+}
+
 interface Bigram {
   start: number;
   text: string;
@@ -67,6 +72,17 @@ export function validateLevel(level: Level): string[] {
     if (r.answer.length < 2) {
       errors.push(`room ${r.id}: answer too short`);
     }
+    if (r.enumeration) {
+      if (r.enumeration.some((n) => n < 1)) {
+        errors.push(`room ${r.id}: enumeration parts must be >= 1`);
+      }
+      const sum = r.enumeration.reduce((a, b) => a + b, 0);
+      if (sum !== r.answer.length) {
+        errors.push(
+          `room ${r.id}: enumeration [${r.enumeration}] sums to ${sum}, but answer has ${r.answer.length} letters`,
+        );
+      }
+    }
     for (const n of r.next) {
       if (!byId.has(n)) errors.push(`room ${r.id}: next "${n}" does not exist`);
     }
@@ -119,6 +135,12 @@ export function validateLevel(level: Level): string[] {
 
   if (level.meta.answer !== normalize(level.meta.answer)) {
     errors.push('meta answer must be uppercase letters only');
+  }
+  if (level.meta.enumeration) {
+    const sum = level.meta.enumeration.reduce((a, b) => a + b, 0);
+    if (sum !== level.meta.answer.length) {
+      errors.push(`meta enumeration [${level.meta.enumeration}] does not sum to meta answer length`);
+    }
   }
 
   // The meta answer must be exactly an anagram of every blue (meta) letter.

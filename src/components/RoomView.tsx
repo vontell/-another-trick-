@@ -4,6 +4,7 @@ import type { useGame } from '../game/useGame';
 import AnswerInput from './AnswerInput';
 import Keyboard from './Keyboard';
 import { useTyping } from './useTyping';
+import { enumerationText } from '../game/bridges';
 
 interface Props {
   room: ResolvedRoom;
@@ -97,7 +98,10 @@ export default function RoomView({ room, game, onClose }: Props) {
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-4">
           <p className="text-lg font-medium leading-snug text-white sm:text-xl">{room.clue}</p>
-          <p className="mt-1 text-sm text-white/40">{room.answer.length} letters</p>
+          <p className="mt-1 text-sm text-white/40">
+            {enumerationText(room.answer, room.enumeration)}
+            {room.enumeration && room.enumeration.length > 1 ? ' · multiple words' : ' letters'}
+          </p>
 
           {!solved && guaranteed.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-panel2/60 px-3 py-2">
@@ -117,6 +121,7 @@ export default function RoomView({ room, game, onClose }: Props) {
             <AnswerInput
               length={room.answer.length}
               value={value}
+              enumeration={room.enumeration}
               revealed={revealed}
               metaIndex={room.metaLetterIndex}
               bridgeStart={solved ? room.bridge?.start : undefined}

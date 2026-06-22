@@ -1,6 +1,8 @@
 interface Props {
   length: number;
   value: string;
+  /** Word lengths; e.g. [3,3] renders two groups of 3 with a gap. */
+  enumeration?: number[];
   /** Map of position -> revealed letter (shown faintly as a hint). */
   revealed?: Map<number, string>;
   /** Position of a single collected (blue) meta-letter square. */
@@ -14,12 +16,13 @@ interface Props {
 export default function AnswerInput({
   length,
   value,
+  enumeration,
   revealed,
   metaIndex,
   bridgeStart,
   status,
 }: Props) {
-  const boxes = Array.from({ length }, (_, i) => {
+  const cell = (i: number) => {
     const ch = value[i] ?? '';
     const hint = !ch && revealed?.get(i);
     const isCaret = i === value.length && status !== 'correct';
@@ -61,11 +64,29 @@ export default function AnswerInput({
         )}
       </div>
     );
+  };
+
+  // Split the flat letter sequence into word-groups per the enumeration.
+  const groups = enumeration && enumeration.length > 1 ? enumeration : [length];
+  let offset = 0;
+  const wordEls = groups.map((len, gi) => {
+    const start = offset;
+    offset += len;
+    return (
+      <div key={gi} className="flex gap-1.5">
+        {Array.from({ length: len }, (_, j) => cell(start + j))}
+      </div>
+    );
   });
 
   return (
-    <div className={['flex flex-wrap justify-center gap-1.5', status === 'wrong' ? 'animate-shake' : ''].join(' ')}>
-      {boxes}
+    <div
+      className={[
+        'flex flex-wrap items-center justify-center gap-x-4 gap-y-2',
+        status === 'wrong' ? 'animate-shake' : '',
+      ].join(' ')}
+    >
+      {wordEls}
     </div>
   );
 }
