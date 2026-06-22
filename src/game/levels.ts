@@ -252,6 +252,7 @@ const rooms: Room[] = [
     next: ['r29'],
     row: 6,
     col: 2,
+    metaLetterIndex: 5, // R
   },
   {
     id: 'r27',
@@ -269,7 +270,6 @@ const rooms: Room[] = [
     next: ['r29'],
     row: 6,
     col: 4,
-    metaLetterIndex: 5, // T
   },
 
   // ── Depth 7 — final (hardest) ──────────────────────────────────────
@@ -294,8 +294,8 @@ export const LEVEL_1: Level = {
   meta: {
     answer: 'TREASURE',
     prompt:
-      'The meta puzzle has no clue of its own. Every blue letter you collected on your journey appears in one word — the thing every explorer seeks at the end of the labyrinth. (8)',
-    hint: 'Each letter you gathered is somewhere in the answer. X marks the spot.',
+      'No clue here — only the blue letters scattered through the maze. Gather every one (no single path holds them all) and rearrange them into one word: what every explorer seeks. (8)',
+    hint: "It's an anagram of all eight blue letters. X marks the spot.",
   },
 };
 

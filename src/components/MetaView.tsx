@@ -18,6 +18,7 @@ export default function MetaView({ game, onClose }: Props) {
 
   const solved = status === 'correct';
   const collected = game.progress.collected;
+  const totalBlue = game.rooms.filter((r) => r.metaLetterIndex !== undefined).length;
 
   const handleSubmit = () => {
     if (solved || value.length !== meta.answer.length) return;
@@ -50,7 +51,7 @@ export default function MetaView({ game, onClose }: Props) {
 
         <div className="mb-4">
           <p className="mb-2 text-xs uppercase tracking-wide text-white/40">
-            Letters you collected ({collected.length})
+            Blue letters collected — {collected.length} of {totalBlue}
           </p>
           {collected.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
@@ -65,7 +66,13 @@ export default function MetaView({ game, onClose }: Props) {
             </div>
           ) : (
             <p className="text-sm text-white/40">
-              You didn&apos;t collect any blue letters — you can still try to solve it!
+              You haven&apos;t collected any blue letters yet — explore the maze to gather them.
+            </p>
+          )}
+          {collected.length < totalBlue && (
+            <p className="mt-2 text-xs text-white/40">
+              {totalBlue - collected.length} still hidden on other paths. The answer uses every blue
+              letter.
             </p>
           )}
         </div>

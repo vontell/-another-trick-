@@ -113,5 +113,17 @@ export function validateLevel(level: Level): string[] {
     errors.push('meta answer must be uppercase letters only');
   }
 
+  // The meta answer must be exactly an anagram of every blue (meta) letter.
+  const blueLetters = level.rooms
+    .filter((r) => r.metaLetterIndex !== undefined)
+    .map((r) => r.answer[r.metaLetterIndex!]);
+  const sortChars = (s: string) => s.split('').sort().join('');
+  if (sortChars(blueLetters.join('')) !== sortChars(level.meta.answer)) {
+    errors.push(
+      `meta answer "${level.meta.answer}" is not an anagram of the blue letters ` +
+        `[${blueLetters.sort().join(', ')}]`,
+    );
+  }
+
   return errors;
 }
