@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import type { ResolvedRoom } from '../game/types';
 import type { useGame } from '../game/useGame';
 import AnswerInput from './AnswerInput';
+import Keyboard from './Keyboard';
+import { useTyping } from './useTyping';
 
 interface Props {
   room: ResolvedRoom;
@@ -25,8 +27,14 @@ export default function RoomView({ room, game, onClose }: Props) {
     return m;
   }, [revealedIdx, room.answer]);
 
-  const tries = game.progress.tries[room.id] ?? 0;
-  const firstTryAvailable = tries === 0 && !alreadySolved;
+  // Letters guaranteed to be in this answer, learned from solved predecessors.
+  const guaranteed = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of game.rooms) {
+      if (p.next.includes(room.id) && game.isSolved(p.id) && p.bridge) set.add(p.bridge.text);
+    }
+    return [...set];
+  }, [game, room.id]);
 
   const handleSubmit = () => {
     if (solved || value.length !== room.answer.length) return;
@@ -41,26 +49,34 @@ export default function RoomView({ room, game, onClose }: Props) {
     }
   };
 
-  const handleReveal = () => {
-    if (solved) return;
-    game.revealLetter(room.id);
-  };
+  const press = useTyping({
+    length: room.answer.length,
+    disabled: solved,
+    onLetter: (k) => {
+      setStatus((s) => (s === 'wrong' ? 'idle' : s));
+      setValue((v) => (v.length < room.answer.length ? v + k : v));
+    },
+    onBackspace: () => {
+      setStatus((s) => (s === 'wrong' ? 'idle' : s));
+      setValue((v) => v.slice(0, -1));
+    },
+    onEnter: handleSubmit,
+  });
 
-  const newlyUnlocked = solved
-    ? room.next.filter((id) => !game.isSolved(id))
-    : [];
+  const newlyUnlocked = solved ? room.next.filter((id) => !game.isSolved(id)) : [];
 
   return (
-    <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4">
-      <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-2xl border border-edge bg-panel p-5 shadow-2xl sm:rounded-2xl">
-        <div className="mb-3 flex items-start justify-between gap-3">
+    <div className="fixed inset-0 z-30 flex items-stretch justify-center bg-black/70 sm:items-center sm:p-4">
+      <div className="flex h-full w-full max-w-lg flex-col border-edge bg-panel shadow-2xl sm:h-auto sm:max-h-[94vh] sm:rounded-2xl sm:border">
+        {/* Header */}
+        <div className="flex shrink-0 items-start justify-between gap-3 p-4 pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-panel2 px-2.5 py-1 text-xs font-medium text-accent">
-              {room.isFinal ? 'Final Chamber' : `Room ${room.id.slice(1)}`}
+              {room.isFinal ? 'Final Chamber' : `Room ${room.id.replace(/^r/, '')}`}
             </span>
             {room.powerUp === 'reveal' && (
               <span className="rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold">
-                ⚡ Reveal token (first try)
+                ⚡ Token (first try)
               </span>
             )}
             {room.metaLetterIndex !== undefined && (
@@ -78,97 +94,104 @@ export default function RoomView({ room, game, onClose }: Props) {
           </button>
         </div>
 
-        <p className="mb-1 text-lg font-medium leading-snug text-white sm:text-xl">{room.clue}</p>
-        <p className="mb-4 text-sm text-white/40">
-          {room.answer.length} letters
-          {firstTryAvailable && room.powerUp === 'reveal'
-            ? ' • answer first time to win a token'
-            : ''}
-        </p>
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto px-4">
+          <p className="text-lg font-medium leading-snug text-white sm:text-xl">{room.clue}</p>
+          <p className="mt-1 text-sm text-white/40">{room.answer.length} letters</p>
 
-        <div className="mb-4">
-          <AnswerInput
-            length={room.answer.length}
-            value={value}
-            onChange={(v) => {
-              setValue(v);
-              if (status === 'wrong') setStatus('idle');
-            }}
-            onSubmit={handleSubmit}
-            revealed={revealed}
-            metaIndex={room.metaLetterIndex}
-            bridgeStart={solved ? room.bridge?.start : undefined}
-            status={status}
-            autoFocus={!alreadySolved}
-            disabled={solved}
-          />
+          {!solved && guaranteed.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-panel2/60 px-3 py-2">
+              <span className="text-xs text-white/50">Guaranteed inside (somewhere):</span>
+              {guaranteed.map((g) => (
+                <span
+                  key={g}
+                  className="rounded border border-gold/50 bg-gold/10 px-2 py-0.5 font-mono text-sm font-bold tracking-widest text-gold"
+                >
+                  {g}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="my-4">
+            <AnswerInput
+              length={room.answer.length}
+              value={value}
+              revealed={revealed}
+              metaIndex={room.metaLetterIndex}
+              bridgeStart={solved ? room.bridge?.start : undefined}
+              status={status}
+            />
+          </div>
+
+          {status === 'wrong' && (
+            <p className="text-center text-sm text-bad">Not quite — try again.</p>
+          )}
+
+          {solved && (
+            <div className="space-y-3 pb-2 animate-pop">
+              <p className="text-center text-sm font-semibold text-good">
+                Correct! {alreadySolved ? '' : 'Path cleared.'}
+              </p>
+              {justEarnedToken && (
+                <p className="rounded-lg bg-gold/10 px-3 py-2 text-center text-sm text-gold">
+                  ⚡ First-try bonus — you earned a Reveal token!
+                </p>
+              )}
+              {room.metaLetterIndex !== undefined && (
+                <p className="rounded-lg bg-meta/15 px-3 py-2 text-center text-sm text-accent">
+                  ◆ Collected the letter{' '}
+                  <span className="font-bold">{room.answer[room.metaLetterIndex]}</span> for the meta
+                  puzzle.
+                </p>
+              )}
+              {room.bridge && (
+                <p className="rounded-lg bg-panel2 px-3 py-2 text-center text-sm text-white/70">
+                  The outlined pair{' '}
+                  <span className="font-mono font-bold text-gold">{room.bridge.text}</span> is
+                  guaranteed in every room ahead.
+                </p>
+              )}
+              {newlyUnlocked.length > 0 && (
+                <p className="text-center text-xs text-white/40">
+                  Opened {newlyUnlocked.length} new room{newlyUnlocked.length > 1 ? 's' : ''}.
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
-        {!solved && (
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <button
-              onClick={handleSubmit}
-              disabled={value.length !== room.answer.length}
-              className="flex-1 rounded-xl bg-accent px-4 py-3 font-semibold text-ink transition enabled:hover:brightness-110 disabled:opacity-40"
-            >
-              Submit
-            </button>
-            <button
-              onClick={handleReveal}
-              disabled={game.progress.tokens <= 0}
-              className="rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 font-semibold text-gold transition enabled:hover:bg-gold/20 disabled:opacity-30"
-            >
-              ⚡ Reveal letter ({game.progress.tokens})
-            </button>
-          </div>
-        )}
-
-        {status === 'wrong' && (
-          <p className="mt-3 text-center text-sm text-bad">Not quite — try again.</p>
-        )}
-
-        {solved && (
-          <div className="mt-2 space-y-3 animate-pop">
-            <p className="text-center text-sm font-semibold text-good">
-              Correct! {alreadySolved ? '' : 'Path cleared.'}
-            </p>
-
-            {justEarnedToken && (
-              <p className="rounded-lg bg-gold/10 px-3 py-2 text-center text-sm text-gold">
-                ⚡ First-try bonus — you earned a Reveal token!
-              </p>
-            )}
-
-            {room.metaLetterIndex !== undefined && (
-              <p className="rounded-lg bg-meta/15 px-3 py-2 text-center text-sm text-accent">
-                ◆ Collected the letter{' '}
-                <span className="font-bold">{room.answer[room.metaLetterIndex]}</span> for the meta
-                puzzle.
-              </p>
-            )}
-
-            {room.bridge && (
-              <p className="rounded-lg bg-panel2 px-3 py-2 text-center text-sm text-white/70">
-                The outlined pair{' '}
-                <span className="font-mono font-bold text-gold">{room.bridge.text}</span> is
-                guaranteed to appear in every room ahead.
-              </p>
-            )}
-
-            {newlyUnlocked.length > 0 && (
-              <p className="text-center text-xs text-white/40">
-                Opened {newlyUnlocked.length} new room{newlyUnlocked.length > 1 ? 's' : ''}.
-              </p>
-            )}
-
+        {/* Footer: actions + keyboard (pinned, never covered) */}
+        <div className="shrink-0 space-y-2 p-3 pt-2">
+          {!solved ? (
+            <>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSubmit}
+                  disabled={value.length !== room.answer.length}
+                  className="flex-1 rounded-xl bg-accent px-4 py-2.5 font-semibold text-ink transition enabled:hover:brightness-110 disabled:opacity-40"
+                >
+                  Submit
+                </button>
+                <button
+                  onClick={() => game.revealLetter(room.id)}
+                  disabled={game.progress.tokens <= 0}
+                  className="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2.5 text-sm font-semibold text-gold transition enabled:hover:bg-gold/20 disabled:opacity-30"
+                >
+                  ⚡ Reveal ({game.progress.tokens})
+                </button>
+              </div>
+              <Keyboard onKey={press} />
+            </>
+          ) : (
             <button
               onClick={onClose}
               className="w-full rounded-xl bg-accent px-4 py-3 font-semibold text-ink hover:brightness-110"
             >
               {room.isFinal ? 'Continue to the meta puzzle →' : 'Back to the map'}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

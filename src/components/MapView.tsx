@@ -14,14 +14,13 @@ const BOTTOM_PAD = 56;
 function xPct(col: number): number {
   return 8 + (col / 6) * 84;
 }
-function yPx(row: number): number {
-  return TOP_PAD + row * ROW_GAP;
-}
 
 export default function MapView({ game, onOpenRoom }: Props) {
   const { rooms } = game;
   const maxRow = useMemo(() => Math.max(...rooms.map((r) => r.row)), [rooms]);
   const height = TOP_PAD + maxRow * ROW_GAP + BOTTOM_PAD;
+  // Invert so depth 0 (the start) sits at the BOTTOM and the final room at the top.
+  const yPx = (row: number) => TOP_PAD + (maxRow - row) * ROW_GAP;
 
   const state = (r: ResolvedRoom): 'solved' | 'available' | 'locked' => {
     if (game.isSolved(r.id)) return 'solved';
@@ -42,9 +41,9 @@ export default function MapView({ game, onOpenRoom }: Props) {
               <line
                 key={`${r.id}-${nid}`}
                 x1={`${xPct(r.col)}%`}
-                y1={yPx(r.row) + 28}
+                y1={yPx(r.row)}
                 x2={`${xPct(child.col)}%`}
-                y2={yPx(child.row) - 28}
+                y2={yPx(child.row)}
                 stroke={active ? '#6ea8fe' : '#2a3357'}
                 strokeWidth={active ? 3 : 2}
                 strokeLinecap="round"

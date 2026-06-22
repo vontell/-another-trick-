@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import type { Level, ResolvedRoom } from './types';
 import { normalize, resolveLevel } from './bridges';
 
-const STORAGE_VERSION = 'v1';
+const STORAGE_VERSION = 'v2';
 
 export interface Progress {
   /** IDs of solved rooms. */

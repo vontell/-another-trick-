@@ -52,6 +52,14 @@ export function validateLevel(level: Level): string[] {
 
   if (level.rooms.length === 0) errors.push('level has no rooms');
 
+  // Every answer must be distinct — no reusing the same word to pad the maze.
+  const seen = new Map<string, string>();
+  for (const r of level.rooms) {
+    const prev = seen.get(r.answer);
+    if (prev) errors.push(`answer "${r.answer}" is reused by rooms ${prev} and ${r.id}`);
+    else seen.set(r.answer, r.id);
+  }
+
   for (const r of level.rooms) {
     if (r.answer !== normalize(r.answer)) {
       errors.push(`room ${r.id}: answer "${r.answer}" must be uppercase letters only`);
@@ -114,14 +122,58 @@ export function validateLevel(level: Level): string[] {
   }
 
   // The meta answer must be exactly an anagram of every blue (meta) letter.
-  const blueLetters = level.rooms
-    .filter((r) => r.metaLetterIndex !== undefined)
-    .map((r) => r.answer[r.metaLetterIndex!]);
+  const blueRooms = level.rooms.filter((r) => r.metaLetterIndex !== undefined);
+  const blueLetters = blueRooms.map((r) => r.answer[r.metaLetterIndex!]);
   const sortChars = (s: string) => s.split('').sort().join('');
   if (sortChars(blueLetters.join('')) !== sortChars(level.meta.answer)) {
     errors.push(
       `meta answer "${level.meta.answer}" is not an anagram of the blue letters ` +
         `[${blueLetters.sort().join(', ')}]`,
+    );
+  }
+
+  // ── Structural rules ──────────────────────────────────────────────
+  const maxRow = Math.max(...level.rooms.map((r) => r.row));
+
+  // Layered: every edge must step exactly one depth up.
+  for (const r of level.rooms) {
+    for (const n of r.next) {
+      const child = byId.get(n);
+      if (child && child.row !== r.row + 1) {
+        errors.push(`edge ${r.id}->${n}: must connect adjacent depths (got rows ${r.row}->${child.row})`);
+      }
+    }
+  }
+
+  // At most 3 rooms per depth.
+  const perRow = new Map<number, number>();
+  for (const r of level.rooms) perRow.set(r.row, (perRow.get(r.row) ?? 0) + 1);
+  for (const [row, count] of perRow) {
+    if (count > 3) errors.push(`depth ${row} has ${count} rooms (max 3)`);
+  }
+
+  // Start rooms at depth 0; the final room alone at the top.
+  for (const id of level.startRoomIds) {
+    const r = byId.get(id);
+    if (r && r.row !== 0) errors.push(`start room ${id} must be at depth 0`);
+  }
+  const finalRoom = byId.get(level.finalRoomId);
+  if (finalRoom && finalRoom.row !== maxRow) {
+    errors.push('final room must be at the top (max depth)');
+  }
+  if ((perRow.get(maxRow) ?? 0) !== 1) {
+    errors.push('the top depth must contain only the final room');
+  }
+
+  // Since edges are layered (one room per depth on any path), two blue rooms
+  // sharing a depth guarantees no single path can collect every blue letter —
+  // forcing the player to explore multiple routes for the meta puzzle.
+  const blueByRow = new Map<number, number>();
+  for (const r of blueRooms) blueByRow.set(r.row, (blueByRow.get(r.row) ?? 0) + 1);
+  if (![...blueByRow.values()].some((c) => c >= 2)) {
+    errors.push(
+      'no two blue letters share a depth — a single path could collect them all; ' +
+        'spread blue rooms so the meta requires exploring multiple routes',
     );
   }
 
