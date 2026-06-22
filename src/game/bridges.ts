@@ -23,29 +23,38 @@ function bigrams(answer: string): Bigram[] {
 }
 
 /**
- * Pick the guaranteed 2-letter bridge for a room: the first bigram of its
- * answer that also appears in every successor's answer. Returns undefined if
- * no such bigram exists (a content error — caught by validateLevel).
+ * Pick the guaranteed 2-letter bridge for a room: among the bigrams of its
+ * answer that also appear in every successor's answer, choose the one that is
+ * RAREST across the whole level (so the hint is as distinctive as possible).
+ * Returns undefined if no shared bigram exists (a content error).
  */
 export function pickBridge(
   room: Room,
   successors: Room[],
+  allAnswers: string[] = [],
 ): { start: number; text: string } | undefined {
   if (successors.length === 0) return undefined;
+  const freq = (text: string) => allAnswers.filter((a) => a.includes(text)).length;
+  let best: { start: number; text: string } | undefined;
+  let bestFreq = Infinity;
   for (const bg of bigrams(room.answer)) {
-    if (successors.every((s) => s.answer.includes(bg.text))) {
-      return { start: bg.start, text: bg.text };
+    if (!successors.every((s) => s.answer.includes(bg.text))) continue;
+    const f = freq(bg.text);
+    if (f < bestFreq) {
+      best = { start: bg.start, text: bg.text };
+      bestFreq = f;
     }
   }
-  return undefined;
+  return best;
 }
 
 /** Resolve a level: normalize answers and attach derived bridges. */
 export function resolveLevel(level: Level): ResolvedLevel {
   const byId = new Map(level.rooms.map((r) => [r.id, r]));
+  const allAnswers = level.rooms.map((r) => r.answer);
   const rooms: ResolvedRoom[] = level.rooms.map((room) => {
     const successors = room.next.map((id) => byId.get(id)).filter(Boolean) as Room[];
-    return { ...room, bridge: pickBridge(room, successors) };
+    return { ...room, bridge: pickBridge(room, successors, allAnswers) };
   });
   return { ...level, rooms };
 }

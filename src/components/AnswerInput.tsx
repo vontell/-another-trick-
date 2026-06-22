@@ -1,8 +1,12 @@
 interface Props {
-  length: number;
-  value: string;
+  /** Current letters, one per square ('' for empty). Length = number of squares. */
+  cells: string[];
   /** Word lengths; e.g. [3,3] renders two groups of 3 with a gap. */
   enumeration?: number[];
+  /** Index of the active square (where the next letter lands). */
+  caret?: number;
+  /** Click a square to move the caret there. */
+  onCellClick?: (i: number) => void;
   /** Map of position -> revealed letter (shown faintly as a hint). */
   revealed?: Map<number, string>;
   /** Position of a single collected (blue) meta-letter square. */
@@ -12,20 +16,23 @@ interface Props {
   status: 'idle' | 'wrong' | 'correct';
 }
 
-/** Display-only answer grid. Typing is handled by the on-screen/physical keyboard. */
+/** Answer grid. Squares are tappable to move the caret; typing is handled by the keyboard. */
 export default function AnswerInput({
-  length,
-  value,
+  cells,
   enumeration,
+  caret,
+  onCellClick,
   revealed,
   metaIndex,
   bridgeStart,
   status,
 }: Props) {
+  const length = cells.length;
+
   const cell = (i: number) => {
-    const ch = value[i] ?? '';
+    const ch = cells[i] ?? '';
     const hint = !ch && revealed?.get(i);
-    const isCaret = i === value.length && status !== 'correct';
+    const isCaret = i === caret && status !== 'correct';
     const isMeta = i === metaIndex;
     const inBridge = bridgeStart !== undefined && (i === bridgeStart || i === bridgeStart + 1);
 
@@ -41,13 +48,16 @@ export default function AnswerInput({
     }
 
     return (
-      <div
+      <button
         key={i}
+        type="button"
+        onClick={() => onCellClick?.(i)}
         className={[
           'relative flex items-center justify-center rounded-md border-2 font-mono font-bold uppercase',
           'h-10 w-9 text-xl sm:h-12 sm:w-11 sm:text-2xl',
           bg,
           border,
+          isCaret ? 'ring-2 ring-accent/50' : '',
           inBridge && status === 'correct' ? 'outline outline-2 outline-gold -outline-offset-2' : '',
         ].join(' ')}
       >
@@ -59,14 +69,11 @@ export default function AnswerInput({
         ) : hint ? (
           <span className="relative z-10 text-accent/60">{hint}</span>
         ) : null}
-        {isCaret && (
-          <span className="absolute bottom-1 h-0.5 w-5 animate-pulse rounded bg-accent" aria-hidden />
-        )}
-      </div>
+      </button>
     );
   };
 
-  // Split the flat letter sequence into word-groups per the enumeration.
+  // Split the flat square sequence into word-groups per the enumeration.
   const groups = enumeration && enumeration.length > 1 ? enumeration : [length];
   let offset = 0;
   const wordEls = groups.map((len, gi) => {

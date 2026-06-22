@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ResolvedRoom } from '../game/types';
 import type { useGame } from '../game/useGame';
 import AnswerInput from './AnswerInput';
@@ -11,11 +11,18 @@ interface Props {
   room: ResolvedRoom;
   game: ReturnType<typeof useGame>;
   onClose: () => void;
+  onNext: (id: string) => void;
 }
 
-export default function RoomView({ room, game, onClose }: Props) {
+const empty = (n: number) => Array.from({ length: n }, () => '');
+
+export default function RoomView({ room, game, onClose, onNext }: Props) {
+  const L = room.answer.length;
   const alreadySolved = game.isSolved(room.id);
-  const [value, setValue] = useState(alreadySolved ? room.answer : '');
+  const [cells, setCells] = useState<string[]>(
+    alreadySolved ? room.answer.split('') : empty(L),
+  );
+  const [caret, setCaret] = useState(0);
   const [status, setStatus] = useState<'idle' | 'wrong' | 'correct'>(
     alreadySolved ? 'correct' : 'idle',
   );
@@ -38,12 +45,14 @@ export default function RoomView({ room, game, onClose }: Props) {
     return [...set];
   }, [game, room.id]);
 
+  const filled = cells.every((c) => c !== '');
+
   const handleSubmit = () => {
-    if (solved || value.length !== room.answer.length) return;
+    if (solved || !filled) return;
     const wasFirstTry = (game.progress.tries[room.id] ?? 0) === 0;
-    const ok = game.submit(room.id, value);
+    const ok = game.submit(room.id, cells.join(''));
     if (ok) {
-      setValue(room.answer);
+      setCells(room.answer.split(''));
       setStatus('correct');
       if (room.powerUp === 'reveal' && wasFirstTry) setJustEarnedToken(true);
     } else {
@@ -51,16 +60,61 @@ export default function RoomView({ room, game, onClose }: Props) {
     }
   };
 
+  // Where "continue" leads after solving: a next room (prefer unsolved), else the map.
+  const nextTarget = useMemo(() => {
+    if (room.isFinal) return null;
+    const unsolved = room.next.filter((id) => !game.isSolved(id));
+    return unsolved[0] ?? room.next[0] ?? null;
+  }, [room, game]);
+
+  const handleAdvance = () => {
+    if (room.isFinal) onClose();
+    else if (nextTarget) onNext(nextTarget);
+    else onClose();
+  };
+
+  // After solving, Enter (physical) advances to the next room.
+  useEffect(() => {
+    if (!solved) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleAdvance();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
   const press = useTyping({
-    length: room.answer.length,
+    length: L,
     disabled: solved,
     onLetter: (k) => {
       setStatus((s) => (s === 'wrong' ? 'idle' : s));
-      setValue((v) => (v.length < room.answer.length ? v + k : v));
+      setCells((prev) => {
+        if (caret >= L) return prev;
+        const next = [...prev];
+        next[caret] = k;
+        // Advance to the next empty square (or just past it).
+        let c = caret + 1;
+        while (c < L && next[c] !== '') c++;
+        setCaret(c);
+        return next;
+      });
     },
     onBackspace: () => {
       setStatus((s) => (s === 'wrong' ? 'idle' : s));
-      setValue((v) => v.slice(0, -1));
+      setCells((prev) => {
+        const next = [...prev];
+        if (caret < L && next[caret] !== '') {
+          next[caret] = '';
+        } else {
+          const i = Math.max(0, caret - 1);
+          next[i] = '';
+          setCaret(i);
+        }
+        return next;
+      });
     },
     onEnter: handleSubmit,
   });
@@ -74,7 +128,7 @@ export default function RoomView({ room, game, onClose }: Props) {
         <div className="flex shrink-0 items-start justify-between gap-3 p-4 pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-panel2 px-2.5 py-1 text-xs font-medium text-accent">
-              {room.isFinal ? 'Final Chamber' : `Room ${room.id.replace(/^r/, '')}`}
+              {room.isFinal ? 'Final Chamber' : `Room ${room.id.replace(/^[a-z]/, '')}`}
             </span>
             {room.powerUp === 'reveal' && (
               <Tooltip
@@ -126,9 +180,10 @@ export default function RoomView({ room, game, onClose }: Props) {
 
           <div className="my-4">
             <AnswerInput
-              length={room.answer.length}
-              value={value}
+              cells={cells}
               enumeration={room.enumeration}
+              caret={solved ? undefined : caret}
+              onCellClick={solved ? undefined : setCaret}
               revealed={revealed}
               metaIndex={room.metaLetterIndex}
               bridgeStart={solved ? room.bridge?.start : undefined}
@@ -180,7 +235,7 @@ export default function RoomView({ room, game, onClose }: Props) {
               <div className="flex gap-2">
                 <button
                   onClick={handleSubmit}
-                  disabled={value.length !== room.answer.length}
+                  disabled={!filled}
                   className="flex-1 rounded-xl bg-accent px-4 py-2.5 font-semibold text-ink transition enabled:hover:brightness-110 disabled:opacity-40"
                 >
                   Submit
@@ -197,10 +252,14 @@ export default function RoomView({ room, game, onClose }: Props) {
             </>
           ) : (
             <button
-              onClick={onClose}
+              onClick={handleAdvance}
               className="w-full rounded-xl bg-accent px-4 py-3 font-semibold text-ink hover:brightness-110"
             >
-              {room.isFinal ? 'Continue to the meta puzzle →' : 'Back to the map'}
+              {room.isFinal
+                ? 'Continue to the meta puzzle →'
+                : nextTarget
+                  ? 'Next room →'
+                  : 'Back to the map'}
             </button>
           )}
         </div>

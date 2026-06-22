@@ -3,16 +3,23 @@ import type { useGame } from '../game/useGame';
 import AnswerInput from './AnswerInput';
 import Keyboard from './Keyboard';
 import { useTyping } from './useTyping';
+import { enumerationText } from '../game/bridges';
 
 interface Props {
   game: ReturnType<typeof useGame>;
   onClose: () => void;
 }
 
+const empty = (n: number) => Array.from({ length: n }, () => '');
+
 export default function MetaView({ game, onClose }: Props) {
   const meta = game.resolved.meta;
+  const L = meta.answer.length;
   const alreadySolved = game.progress.metaSolved;
-  const [value, setValue] = useState(alreadySolved ? meta.answer : '');
+  const [cells, setCells] = useState<string[]>(
+    alreadySolved ? meta.answer.split('') : empty(L),
+  );
+  const [caret, setCaret] = useState(0);
   const [status, setStatus] = useState<'idle' | 'wrong' | 'correct'>(
     alreadySolved ? 'correct' : 'idle',
   );
@@ -21,11 +28,12 @@ export default function MetaView({ game, onClose }: Props) {
   const solved = status === 'correct';
   const collected = game.progress.collected;
   const totalBlue = game.rooms.filter((r) => r.metaLetterIndex !== undefined).length;
+  const filled = cells.every((c) => c !== '');
 
   const handleSubmit = () => {
-    if (solved || value.length !== meta.answer.length) return;
-    if (game.submitMeta(value)) {
-      setValue(meta.answer);
+    if (solved || !filled) return;
+    if (game.submitMeta(cells.join(''))) {
+      setCells(meta.answer.split(''));
       setStatus('correct');
     } else {
       setStatus('wrong');
@@ -33,15 +41,33 @@ export default function MetaView({ game, onClose }: Props) {
   };
 
   const press = useTyping({
-    length: meta.answer.length,
+    length: L,
     disabled: solved,
     onLetter: (k) => {
       setStatus((s) => (s === 'wrong' ? 'idle' : s));
-      setValue((v) => (v.length < meta.answer.length ? v + k : v));
+      setCells((prev) => {
+        if (caret >= L) return prev;
+        const next = [...prev];
+        next[caret] = k;
+        let c = caret + 1;
+        while (c < L && next[c] !== '') c++;
+        setCaret(c);
+        return next;
+      });
     },
     onBackspace: () => {
       setStatus((s) => (s === 'wrong' ? 'idle' : s));
-      setValue((v) => v.slice(0, -1));
+      setCells((prev) => {
+        const next = [...prev];
+        if (caret < L && next[caret] !== '') {
+          next[caret] = '';
+        } else {
+          const i = Math.max(0, caret - 1);
+          next[i] = '';
+          setCaret(i);
+        }
+        return next;
+      });
     },
     onEnter: handleSubmit,
   });
@@ -94,10 +120,14 @@ export default function MetaView({ game, onClose }: Props) {
           </div>
 
           <div className="my-4">
+            <p className="mb-2 text-center text-xs text-white/40">
+              {enumerationText(meta.answer, meta.enumeration)}
+            </p>
             <AnswerInput
-              length={meta.answer.length}
-              value={value}
+              cells={cells}
               enumeration={meta.enumeration}
+              caret={solved ? undefined : caret}
+              onCellClick={solved ? undefined : setCaret}
               status={status}
             />
           </div>
@@ -123,7 +153,7 @@ export default function MetaView({ game, onClose }: Props) {
             <>
               <button
                 onClick={handleSubmit}
-                disabled={value.length !== meta.answer.length}
+                disabled={!filled}
                 className="w-full rounded-xl bg-gold px-4 py-2.5 font-semibold text-ink transition enabled:hover:brightness-110 disabled:opacity-40"
               >
                 Solve the meta

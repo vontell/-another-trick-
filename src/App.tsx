@@ -79,7 +79,15 @@ function GameScreen({ level }: { level: Level }) {
         )}
       </main>
 
-      {openRoom && <RoomView room={openRoom} game={game} onClose={handleCloseRoom} />}
+      {openRoom && (
+        <RoomView
+          key={openRoom.id}
+          room={openRoom}
+          game={game}
+          onClose={handleCloseRoom}
+          onNext={setOpenRoomId}
+        />
+      )}
       {showMeta && <MetaView game={game} onClose={() => setShowMeta(false)} />}
     </>
   );
