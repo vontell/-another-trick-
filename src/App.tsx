@@ -5,6 +5,7 @@ import { useGame } from './game/useGame';
 import MapView from './components/MapView';
 import RoomView from './components/RoomView';
 import MetaView from './components/MetaView';
+import Tooltip from './components/Tooltip';
 
 function GameScreen({ level }: { level: Level }) {
   const game = useGame(level);
@@ -30,12 +31,18 @@ function GameScreen({ level }: { level: Level }) {
   return (
     <>
       <div className="flex items-center justify-end gap-2 px-4 py-2 text-sm">
-        <span className="rounded-lg bg-gold/15 px-2.5 py-1 font-semibold text-gold" title="Reveal-letter tokens">
+        <Tooltip
+          label="Reveal tokens. Earn one by solving a ⚡ room on the first try; spend one inside any room to reveal a letter."
+          className="rounded-lg bg-gold/15 px-2.5 py-1 font-semibold text-gold"
+        >
           ⚡ {game.progress.tokens}
-        </span>
-        <span className="rounded-lg bg-panel2 px-2.5 py-1 font-medium text-white/70" title="Rooms solved">
+        </Tooltip>
+        <Tooltip
+          label="Rooms solved in this level out of the total."
+          className="rounded-lg bg-panel2 px-2.5 py-1 font-medium text-white/70"
+        >
           {game.solvedCount}/{totalRooms}
-        </span>
+        </Tooltip>
         {game.progress.metaSolved && (
           <span className="rounded-lg bg-gold/20 px-2.5 py-1 font-semibold text-gold">★ Complete</span>
         )}

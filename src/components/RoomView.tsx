@@ -3,6 +3,7 @@ import type { ResolvedRoom } from '../game/types';
 import type { useGame } from '../game/useGame';
 import AnswerInput from './AnswerInput';
 import Keyboard from './Keyboard';
+import Tooltip from './Tooltip';
 import { useTyping } from './useTyping';
 import { enumerationText } from '../game/bridges';
 
@@ -76,14 +77,20 @@ export default function RoomView({ room, game, onClose }: Props) {
               {room.isFinal ? 'Final Chamber' : `Room ${room.id.replace(/^r/, '')}`}
             </span>
             {room.powerUp === 'reveal' && (
-              <span className="rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold">
+              <Tooltip
+                label="Reveal token: solve this room on your first guess (no wrong tries) to earn a ⚡ token. Spend a token in any room to reveal one letter."
+                className="rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold"
+              >
                 ⚡ Token (first try)
-              </span>
+              </Tooltip>
             )}
             {room.metaLetterIndex !== undefined && (
-              <span className="rounded-full bg-meta/20 px-2.5 py-1 text-xs font-medium text-accent">
+              <Tooltip
+                label="Meta letter: this room hides one blue square. Solve it to collect that letter toward the end-of-level meta puzzle."
+                className="rounded-full bg-meta/20 px-2.5 py-1 text-xs font-medium text-accent"
+              >
                 ◆ Meta letter
-              </span>
+              </Tooltip>
             )}
           </div>
           <button
