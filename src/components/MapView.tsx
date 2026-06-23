@@ -128,6 +128,8 @@ export default function MapView({ game, onOpenRoom, big = false, currentId }: Pr
               : 'border-edge text-ink/30';
 
         const iconSize = big ? 34 : 24;
+        const badge = big ? 30 : 24; // px diameter of the corner power-up / meta badges
+        const badgeIcon = big ? 18 : 15;
 
         return (
           <div
@@ -170,18 +172,22 @@ export default function MapView({ game, onOpenRoom, big = false, currentId }: Pr
               )}
 
               {showPower && st !== 'solved' && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-gold bg-panel text-gold">
-                  <Icon name={r.powerUp === 'vowel' ? 'vowel' : 'reveal'} size={11} strokeWidth={2} />
+                <span
+                  className="absolute -right-1.5 -top-1.5 flex items-center justify-center rounded-full border-2 border-gold bg-panel text-gold shadow-map"
+                  style={{ width: badge, height: badge }}
+                >
+                  <Icon name={r.powerUp === 'vowel' ? 'vowel' : 'reveal'} size={badgeIcon} strokeWidth={2} />
                 </span>
               )}
               {showMeta && (
                 <span
                   className={[
-                    'absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border',
+                    'absolute -bottom-1.5 -right-1.5 flex items-center justify-center rounded-full border-2 shadow-map',
                     collected ? 'border-meta bg-meta text-cream' : 'border-meta bg-panel text-meta',
                   ].join(' ')}
+                  style={{ width: badge, height: badge }}
                 >
-                  <Icon name="meta" size={11} strokeWidth={2} />
+                  <Icon name="meta" size={badgeIcon} strokeWidth={2} />
                 </span>
               )}
             </button>
