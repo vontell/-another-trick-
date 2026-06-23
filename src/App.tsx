@@ -9,6 +9,7 @@ import MetaView from './components/MetaView';
 import HelpDialog from './components/HelpDialog';
 import StatsDialog from './components/StatsDialog';
 import SettingsDialog from './components/SettingsDialog';
+import PuzzlesDialog from './components/PuzzlesDialog';
 import Icon from './components/Icon';
 import { useIsDesktop } from './components/useIsDesktop';
 
@@ -206,14 +207,15 @@ function GameScreen({
 }
 
 export default function App() {
-  const [levelIndex, setLevelIndex] = useState(0);
-  const level = LEVELS[levelIndex];
+  const [puzzleId, setPuzzleId] = useState(LEVELS[0].id);
+  const level = LEVELS.find((l) => l.id === puzzleId) ?? LEVELS[0];
   const isDesktop = useIsDesktop();
   const { store, setSettings, markHelpSeen, recordLevelComplete, resetStats } = useStore();
 
   const [showHelp, setShowHelp] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPuzzles, setShowPuzzles] = useState(false);
 
   // First visit: show the explainer once.
   useEffect(() => {
@@ -234,30 +236,23 @@ export default function App() {
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <Icon name="compass" size={22} className="shrink-0 text-accent" />
-            <h1 className="truncate font-display text-lg font-bold tracking-wide text-ink">Cryptic Maze</h1>
+            <div className="min-w-0">
+              <h1 className="truncate font-display text-base font-bold leading-tight tracking-wide text-ink">
+                Cryptic Maze
+              </h1>
+              <p className="truncate text-xs text-ink/50">{level.title}</p>
+            </div>
             <span
-              className={['rounded-full px-2 py-0.5 font-display text-[11px] font-semibold tracking-wider', DIFF_STYLE[level.difficulty]].join(' ')}
+              className={['ml-1 rounded-full px-2 py-0.5 font-display text-[11px] font-semibold tracking-wider', DIFF_STYLE[level.difficulty]].join(' ')}
               title="Maze difficulty"
             >
               {level.difficulty}
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <div className="flex gap-1 rounded-lg bg-panel2 p-1">
-              {LEVELS.map((l, i) => (
-                <button
-                  key={l.id}
-                  onClick={() => setLevelIndex(i)}
-                  className={[
-                    'rounded-md px-2.5 py-1 text-sm font-medium transition',
-                    i === levelIndex ? 'bg-accent text-cream' : 'text-ink/60 hover:text-ink',
-                  ].join(' ')}
-                  title={`${l.title} — ${l.difficulty}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
+            <button className={iconBtn} onClick={() => setShowPuzzles(true)} title="Daily puzzles" aria-label="Daily puzzles">
+              <Icon name="calendar" size={17} />
+            </button>
             <button className={iconBtn} onClick={() => setShowStats(true)} title="Stats" aria-label="Stats">
               <Icon name="scroll" size={17} />
             </button>
@@ -294,6 +289,15 @@ export default function App() {
           setSettings={setSettings}
           onResetStats={resetStats}
           onClose={() => setShowSettings(false)}
+        />
+      )}
+      {showPuzzles && (
+        <PuzzlesDialog
+          puzzles={LEVELS}
+          stats={store.stats}
+          currentId={puzzleId}
+          onSelect={setPuzzleId}
+          onClose={() => setShowPuzzles(false)}
         />
       )}
     </div>

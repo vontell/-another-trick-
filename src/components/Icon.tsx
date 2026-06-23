@@ -12,6 +12,7 @@ export type IconName =
   | 'hourglass' // timer
   | 'flag' // maze finished
   | 'star' // meta / treasure
+  | 'calendar'
   | 'close';
 
 const PATHS: Record<IconName, React.ReactNode> = {
@@ -88,6 +89,12 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <path d="M12 2.5 L14 9.5 L21.5 12 L14 14.5 L12 21.5 L10 14.5 L2.5 12 L10 9.5 Z" />
   ),
   close: <path d="M6 6 L18 18 M18 6 L6 18" />,
+  calendar: (
+    <>
+      <rect x="4" y="5.5" width="16" height="15" rx="2" />
+      <path d="M4 9.5 H20 M8 3.5 V7 M16 3.5 V7" />
+    </>
+  ),
 };
 
 export default function Icon({

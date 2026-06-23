@@ -48,6 +48,8 @@ export interface ResolvedRoom extends Room {
 
 export interface Level {
   id: string;
+  /** ISO date (YYYY-MM-DD) for a daily puzzle. */
+  date?: string;
   title: string;
   subtitle: string;
   /** Overall maze difficulty, NYT-crossword style. */
