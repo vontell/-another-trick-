@@ -6,7 +6,8 @@ export type IconName =
   | 'spot' // X marks the spot
   | 'lock'
   | 'chest' // final chamber
-  | 'compass' // help
+  | 'compass'
+  | 'help' // question mark
   | 'sliders' // settings
   | 'scroll' // stats / ledger
   | 'hourglass' // timer
@@ -57,6 +58,13 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <circle cx="12" cy="12" r="9" />
       <path d="M12 6.5 L14 12 L12 17.5 L10 12 Z" />
       <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
+    </>
+  ),
+  help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.4 9.3 a2.6 2.6 0 1 1 3.7 2.5 c-.95.55-1.15 1.05-1.15 1.95" />
+      <circle cx="12" cy="16.8" r="1" fill="currentColor" stroke="none" />
     </>
   ),
   sliders: (

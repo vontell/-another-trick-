@@ -260,7 +260,7 @@ export default function App() {
               <Icon name="sliders" size={17} />
             </button>
             <button className={iconBtn} onClick={() => setShowHelp(true)} title="How to play" aria-label="Help">
-              <Icon name="compass" size={17} />
+              <Icon name="help" size={18} />
             </button>
           </div>
         </div>

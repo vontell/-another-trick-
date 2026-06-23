@@ -116,6 +116,7 @@ export default function MapView({ game, onOpenRoom, big = false, currentId }: Pr
       {rooms.map((r) => {
         const st = state(r);
         const isCurrent = r.id === currentId;
+        const currentSolved = isCurrent && st === 'solved';
         const showPower = r.powerUp;
         const showMeta = r.metaLetterIndex !== undefined;
         const collected = game.progress.collected.some((c) => c.roomId === r.id);
@@ -144,7 +145,10 @@ export default function MapView({ game, onOpenRoom, big = false, currentId }: Pr
             {/* "You are here" pulse ring */}
             {isCurrent && (
               <span
-                className="pointer-events-none absolute -inset-1.5 animate-glowpulse rounded-full border-2 border-accent"
+                className={[
+                  'pointer-events-none absolute -inset-1.5 animate-glowpulse rounded-full border-2',
+                  currentSolved ? 'border-meta' : 'border-accent',
+                ].join(' ')}
                 aria-hidden
               />
             )}
@@ -153,15 +157,15 @@ export default function MapView({ game, onOpenRoom, big = false, currentId }: Pr
               onClick={() => onOpenRoom(r.id)}
               className={[
                 'relative flex items-center justify-center rounded-full border-2 shadow-map transition-transform',
-                isCurrent ? 'bg-accent text-cream' : 'bg-panel',
-                isCurrent ? 'border-accent' : look,
+                currentSolved ? 'bg-meta text-cream' : isCurrent ? 'bg-accent text-cream' : 'bg-panel',
+                currentSolved ? 'border-meta' : isCurrent ? 'border-accent' : look,
                 r.isFinal ? 'ring-2 ring-gold ring-offset-2 ring-offset-paper' : '',
                 st === 'available' && !isCurrent ? 'animate-glowpulse' : '',
               ].join(' ')}
               style={{ width: NODE, height: NODE }}
               title={st === 'locked' ? 'Locked' : r.isFinal ? 'Final chamber' : r.clue}
             >
-              {st === 'solved' && !isCurrent ? (
+              {st === 'solved' ? (
                 <Icon name="check" size={iconSize} strokeWidth={2.2} />
               ) : st === 'locked' ? (
                 <Icon name="lock" size={iconSize - 4} />
