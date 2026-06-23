@@ -40,7 +40,7 @@ export default function Tooltip({
       {open && (
         <span
           role="tooltip"
-          className="absolute left-1/2 top-full z-50 mt-1.5 w-52 -translate-x-1/2 rounded-lg border border-edge bg-paper px-3 py-2 text-left text-xs font-normal normal-case leading-snug text-ink/80 shadow-xl"
+          className="absolute left-1/2 top-full z-50 mt-1.5 w-60 -translate-x-1/2 rounded-lg border border-edge bg-paper px-3 py-2 text-left text-sm font-normal normal-case leading-snug text-ink/80 shadow-xl"
         >
           {label}
         </span>

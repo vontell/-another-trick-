@@ -28,7 +28,7 @@ export default function PuzzlesDialog({
 
   return (
     <Modal title="Daily puzzles" onClose={onClose}>
-      <p className="mb-3 text-sm text-ink/60">Pick a day to play. New puzzles get harder as the week goes on.</p>
+      <p className="mb-3 text-base text-ink/60">Pick a day to play. New puzzles get harder as the week goes on.</p>
       <div className="space-y-2">
         {ordered.map((p) => {
           const done = stats.perLevel[p.id]?.completed;

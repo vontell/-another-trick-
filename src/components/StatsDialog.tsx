@@ -31,13 +31,13 @@ export default function StatsDialog({
           {tiles.map(([label, value]) => (
             <div key={label} className="rounded-lg bg-panel2 px-3 py-2">
               <div className="text-xl font-bold text-ink">{value}</div>
-              <div className="text-xs text-ink/50">{label}</div>
+              <div className="text-sm text-ink/60">{label}</div>
             </div>
           ))}
         </div>
 
         <div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-ink/40">Per level (best)</p>
+          <p className="mb-2 text-sm uppercase tracking-wide text-ink/40">Per level (best)</p>
           <div className="space-y-2">
             {levels.map((lvl) => {
               const s = stats.perLevel[lvl.id];

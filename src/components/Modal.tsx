@@ -22,7 +22,7 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex shrink-0 items-center justify-between border-b border-edge/60 p-4">
-          <h2 className={['font-display text-lg font-bold tracking-wide', accent === 'gold' ? 'text-gold' : 'text-ink'].join(' ')}>
+          <h2 className={['font-display text-xl font-bold tracking-wide', accent === 'gold' ? 'text-gold' : 'text-ink'].join(' ')}>
             {title}
           </h2>
           <button

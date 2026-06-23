@@ -4,7 +4,7 @@ import Icon from './Icon';
 export default function HelpDialog({ onClose }: { onClose: () => void }) {
   return (
     <Modal title="How to play Cryptic Maze" onClose={onClose}>
-      <div className="space-y-4 text-sm leading-relaxed text-ink/80">
+      <div className="space-y-4 text-base leading-relaxed text-ink/80">
         <p>
           Each room is a single crossword clue. Solve a path of rooms from the entrances at the{' '}
           <span className="text-ink">bottom</span> up to the final chamber at the{' '}
