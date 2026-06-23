@@ -310,7 +310,11 @@ export default function RoomView({
   );
 
   if (variant === 'panel') {
-    return <div className="flex h-full w-full flex-col bg-panel">{body}</div>;
+    return (
+      <div className="flex h-full w-full justify-center bg-panel">
+        <div className="flex h-full w-full max-w-xl flex-col">{body}</div>
+      </div>
+    );
   }
 
   return (

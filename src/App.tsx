@@ -140,7 +140,7 @@ function GameScreen({
         </main>
 
         {isDesktop && openRoom && (
-          <aside className="flex w-[26rem] shrink-0 flex-col border-l border-edge">
+          <aside className="flex w-1/2 shrink-0 flex-col border-l border-edge">
             <RoomView
               key={openRoom.id}
               room={openRoom}
@@ -197,7 +197,7 @@ export default function App() {
   return (
     <div className="flex h-full flex-col">
       <header className="z-10 border-b border-edge/60 bg-ink/70 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <h1 className="truncate text-lg font-bold tracking-tight text-white">Cryptic Maze</h1>
             <span
