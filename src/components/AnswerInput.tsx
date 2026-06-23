@@ -34,6 +34,19 @@ export default function AnswerInput({
 }: Props) {
   const length = cells.length;
 
+  // Shrink squares for long answers so they fit on screen. Size by the longest
+  // single word (multi-word groups wrap to their own line).
+  const maxWord =
+    enumeration && enumeration.length > 1 ? Math.max(...enumeration) : length;
+  const tier = maxWord <= 6 ? 'lg' : maxWord <= 8 ? 'md' : maxWord <= 10 ? 'sm' : 'xs';
+  const cellSize = {
+    lg: 'h-11 w-10 text-2xl sm:h-14 sm:w-12 sm:text-3xl',
+    md: 'h-10 w-9 text-xl sm:h-12 sm:w-11 sm:text-2xl',
+    sm: 'h-9 w-7 text-lg sm:h-12 sm:w-10 sm:text-2xl',
+    xs: 'h-8 w-6 text-sm sm:h-11 sm:w-9 sm:text-xl',
+  }[tier];
+  const groupGap = tier === 'lg' || tier === 'md' ? 'gap-1.5' : 'gap-1';
+
   const cell = (i: number) => {
     const ch = cells[i] ?? '';
     const hint = !ch && revealed?.get(i);
@@ -69,8 +82,8 @@ export default function AnswerInput({
         onClick={() => onCellClick?.(i)}
         style={status === 'correct' ? { animationDelay: `${i * 55}ms` } : undefined}
         className={[
-          'relative flex items-center justify-center rounded-md border-2 font-display font-bold uppercase',
-          'h-11 w-10 text-2xl sm:h-14 sm:w-12 sm:text-3xl',
+          'relative flex shrink-0 items-center justify-center rounded-md border-2 font-display font-bold uppercase',
+          cellSize,
           bg,
           border,
           isCaret ? 'ring-2 ring-accent/40' : '',
@@ -97,7 +110,7 @@ export default function AnswerInput({
     const start = offset;
     offset += len;
     return (
-      <div key={gi} className="flex gap-1.5">
+      <div key={gi} className={['flex', groupGap].join(' ')}>
         {Array.from({ length: len }, (_, j) => cell(start + j))}
       </div>
     );
