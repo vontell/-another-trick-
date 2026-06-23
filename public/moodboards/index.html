@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cryptic Maze — Aesthetic Mood Boards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Space Grotesk', system-ui, sans-serif;
+        background: #0b1020;
+        color: #e6ebff;
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+        padding: 48px 20px 80px;
+      }
+      .wrap { max-width: 1100px; margin: 0 auto; }
+      .kicker { letter-spacing: .3em; text-transform: uppercase; font-size: 12px; color: #6ea8fe; }
+      h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(34px, 6vw, 64px); line-height: 1.02; margin: 10px 0 14px; }
+      .lede { max-width: 620px; color: #aab3d4; font-size: 17px; line-height: 1.6; }
+      .grid { margin-top: 44px; display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+      a.card {
+        display: block; text-decoration: none; color: inherit; border-radius: 18px;
+        overflow: hidden; border: 1px solid #2a3357; background: #141a2e;
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      }
+      a.card:hover { transform: translateY(-4px); border-color: #6ea8fe; box-shadow: 0 18px 50px rgba(0,0,0,.5); }
+      .thumb { height: 150px; display: flex; align-items: flex-end; padding: 16px; position: relative; }
+      .thumb .name { font-weight: 700; font-size: 20px; }
+      .body { padding: 16px; }
+      .body p { color: #aab3d4; font-size: 14px; line-height: 1.55; }
+      .tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+      .tag { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: #1c2440; color: #aab3d4; }
+      .back { display: inline-block; margin-top: 36px; color: #6ea8fe; text-decoration: none; font-weight: 500; }
+      .back:hover { text-decoration: underline; }
+
+      /* Theme thumbnails */
+      .t-neon { background: radial-gradient(120% 120% at 0% 0%, #2a0a3a, #07060d); }
+      .t-neon .name { color: #2ef2ff; text-shadow: 0 0 14px #2ef2ffaa; font-family: 'Space Grotesk'; letter-spacing: .04em; }
+      .t-map { background: linear-gradient(135deg, #efe6c9, #d8c79c); }
+      .t-map .name { color: #5b3a22; font-family: 'Fraunces'; }
+      .t-cosmic { background: radial-gradient(120% 120% at 80% 10%, #2a2160, #0a0f2c); }
+      .t-cosmic .name { color: #f5d67b; font-family: 'Fraunces'; }
+      .t-term { background: #060a06; }
+      .t-term .name { color: #4ee36b; font-family: monospace; text-shadow: 0 0 10px #4ee36b88; }
+      .t-deco { background: linear-gradient(135deg, #141206, #2a2410); }
+      .t-deco .name { color: #d4af37; font-family: 'Fraunces'; letter-spacing: .12em; text-transform: uppercase; }
+      .t-bot { background: linear-gradient(135deg, #f3eee0, #d7e1cf); }
+      .t-bot .name { color: #4f6b54; font-family: 'Fraunces'; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="kicker">Cryptic Maze · design exploration</div>
+      <h1>Six aesthetic directions</h1>
+      <p class="lede">
+        Each board re-skins the <em>same</em> mock interface — a clue card, the answer squares with a
+        bridge pair and a blue meta letter, a slice of the maze map, and the power-up chips — so you
+        can compare the vibes side by side. Tap any one to open it full-screen.
+      </p>
+
+      <div class="grid">
+        <a class="card" href="./neon-arcade.html">
+          <div class="thumb t-neon"><span class="name">Neon Arcade</span></div>
+          <div class="body">
+            <p>Synthwave CRT energy — glowing grid, magenta &amp; cyan, scanlines. Game-y and loud.</p>
+            <div class="tags"><span class="tag">cyberpunk</span><span class="tag">glow</span><span class="tag">high-energy</span></div>
+          </div>
+        </a>
+        <a class="card" href="./treasure-map.html">
+          <div class="thumb t-map"><span class="name">Cartographer's Map</span></div>
+          <div class="body">
+            <p>Aged parchment, sepia ink, dashed routes and a compass rose. Leans into "labyrinth &amp; treasure."</p>
+            <div class="tags"><span class="tag">parchment</span><span class="tag">hand-drawn</span><span class="tag">cozy-adventure</span></div>
+          </div>
+        </a>
+        <a class="card" href="./cosmic.html">
+          <div class="thumb t-cosmic"><span class="name">Celestial Atlas</span></div>
+          <div class="body">
+            <p>The maze as a star chart — midnight blues, gold constellations, glowing nodes. Elegant and calm.</p>
+            <div class="tags"><span class="tag">cosmic</span><span class="tag">constellations</span><span class="tag">premium</span></div>
+          </div>
+        </a>
+        <a class="card" href="./terminal.html">
+          <div class="thumb t-term"><span class="name">Cipher Terminal</span></div>
+          <div class="body">
+            <p>Green-phosphor hacker console — monospace, blinking cursor, ASCII. Perfect for the cryptic level.</p>
+            <div class="tags"><span class="tag">retro-terminal</span><span class="tag">monospace</span><span class="tag">puzzly</span></div>
+          </div>
+        </a>
+        <a class="card" href="./art-deco.html">
+          <div class="thumb t-deco"><span class="name">Gilded Deco</span></div>
+          <div class="body">
+            <p>1920s Art Deco — black &amp; gold, sunbursts, symmetry, thin geometric lines. Sophisticated puzzle club.</p>
+            <div class="tags"><span class="tag">art-deco</span><span class="tag">gold</span><span class="tag">elegant</span></div>
+          </div>
+        </a>
+        <a class="card" href="./botanical.html">
+          <div class="thumb t-bot"><span class="name">Cozy Botanical</span></div>
+          <div class="body">
+            <p>Warm cream, sage &amp; terracotta, soft serif, leafy motifs. Gentle, inviting, "Sunday morning" calm.</p>
+            <div class="tags"><span class="tag">cozy</span><span class="tag">pastel</span><span class="tag">friendly</span></div>
+          </div>
+        </a>
+      </div>
+
+      <a class="back" href="../">← Back to the game</a>
+    </div>
+  </body>
+</html>

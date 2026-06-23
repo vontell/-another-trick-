@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood board — Cartographer's Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root { --paper:#ece0bf; --paper2:#e3d4ab; --ink:#3a2c19; --ink2:#6b5638; --ox:#8a3b2e; --gold:#9c6f24; --sea:#9bb39b; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Spectral', serif; color: var(--ink); min-height: 100vh;
+        background:
+          radial-gradient(80% 60% at 20% 10%, #f3ead0 0%, transparent 60%),
+          radial-gradient(70% 60% at 90% 90%, #d8c79c 0%, transparent 55%),
+          repeating-linear-gradient(8deg, #00000004 0 2px, transparent 2px 6px),
+          var(--paper);
+        background-attachment: fixed;
+      }
+      body::after { content:''; position: fixed; inset: 0; pointer-events: none; z-index: 40;
+        box-shadow: inset 0 0 160px #5b3a2266, inset 0 0 40px #3a2c1944; }
+      .wrap { max-width: 960px; margin: 0 auto; padding: 26px 18px 80px; position: relative; z-index: 1; }
+
+      .top { display:flex; align-items:center; justify-content:space-between; border: 2px solid var(--ink); border-radius: 4px;
+        padding: 12px 16px; background: #00000008; }
+      .logo { font-family:'Cinzel'; font-weight: 900; letter-spacing:.16em; color: var(--ink); }
+      .diff { font-family:'Cinzel'; font-size: 11px; letter-spacing:.18em; padding: 5px 12px; border: 2px solid var(--ox); color: var(--ox); border-radius: 2px; }
+
+      h1 { font-family:'Cinzel'; font-weight: 900; font-size: clamp(36px, 7vw, 70px); margin: 36px 0 4px; color: var(--ink); }
+      .vibe { font-style: italic; color: var(--ink2); font-size: 16px; }
+
+      .cards { display:grid; gap:18px; grid-template-columns: 1.2fr .8fr; margin-top: 28px; }
+      @media (max-width:720px){ .cards{ grid-template-columns:1fr; } }
+      .panel { border: 2px solid var(--ink); border-radius: 6px; padding: 20px; background: #fbf3da99;
+        box-shadow: 6px 6px 0 #3a2c1922; }
+
+      .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+      .chip { font-family:'Cinzel'; font-size: 11px; letter-spacing:.06em; padding: 5px 11px; border-radius: 2px; border: 1.5px solid var(--ink2); color: var(--ink2); }
+      .chip.gold { color: var(--ox); border-color: var(--ox); background:#8a3b2e10; }
+
+      .clue { font-size: 22px; line-height: 1.35; text-align: center; margin: 8px 0 22px; font-style: italic; }
+      .squares { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+      .sq { width:46px; height:54px; display:grid; place-items:center; border-radius: 3px;
+        font-family:'Cinzel'; font-weight:700; font-size:24px; color: var(--ink);
+        background: repeating-linear-gradient(45deg, #e7d8af 0 6px, #e1d0a3 6px 12px); border: 2px solid var(--ink2); }
+      .sq.bridge { border-color: var(--gold); box-shadow: 0 0 0 2px #9c6f2455; color: var(--ox); }
+      .sq.meta { border-color: var(--sea); background: #cfe0cf; }
+      .hint { text-align:center; color: var(--ink2); margin-top: 14px; font-style: italic; }
+
+      .edge { stroke: var(--ox); stroke-width: 2.5; stroke-dasharray: 2 7; stroke-linecap: round; }
+      .edge.dim { stroke: #9b8a66; }
+      .node { fill:#efe3c2; stroke: var(--ink); stroke-width: 2.5; }
+      .node.solved { fill:#cfe0cf; stroke: var(--ink2); }
+      .node.cur { stroke: var(--ox); stroke-width: 3.5; }
+      .nlabel { fill: var(--ink); font-family:'Cinzel'; font-weight:700; font-size: 16px; text-anchor: middle; dominant-baseline: middle; }
+
+      .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px; }
+      @media (max-width:720px){ .meta-row{ grid-template-columns:1fr; } }
+      .swatches { display:flex; gap:8px; margin-top:10px; }
+      .sw { flex:1; height:46px; border-radius:3px; border:1px solid #3a2c1933; }
+      .lbl { font-family:'Cinzel'; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color: var(--ink2); }
+      .note { color: var(--ink); line-height:1.65; font-size:14px; margin-top:8px; }
+      .type-display { font-family:'Cinzel'; font-weight:900; font-size:28px; }
+      .type-body { font-style: italic; font-size: 16px; color: var(--ink2); }
+      a.back { display:inline-block; margin-top:34px; color: var(--ox); font-family:'Cinzel'; text-decoration: none; letter-spacing:.08em; }
+      a.back:hover { text-decoration: underline; }
+      .compass { position:absolute; top: 18px; right: 18px; width: 64px; height: 64px; opacity:.5; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <svg class="compass" viewBox="0 0 100 100"><g fill="none" stroke="#6b5638" stroke-width="2"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="34"/></g><polygon points="50,8 58,50 50,46 42,50" fill="#8a3b2e"/><polygon points="50,92 42,50 50,54 58,50" fill="#6b5638"/><text x="50" y="6" text-anchor="middle" font-size="9" fill="#3a2c19" font-family="Cinzel">N</text></svg>
+      <div class="top"><span class="logo">CRYPTIC MAZE</span><span class="diff">HARD</span></div>
+
+      <h1>Cartographer's Map</h1>
+      <div class="vibe">aged parchment · dashed routes · X marks the spot</div>
+
+      <div class="cards">
+        <div class="panel">
+          <div class="chips"><span class="chip gold">⚡ Token</span><span class="chip gold">🅰 Vowel Flare</span><span class="chip">◆ Meta letter</span></div>
+          <div class="clue">Domed Roman temple dedicated to all the gods</div>
+          <div class="squares">
+            <div class="sq">P</div><div class="sq bridge">A</div><div class="sq bridge">N</div><div class="sq">T</div>
+            <div class="sq">H</div><div class="sq meta">E</div><div class="sq">O</div><div class="sq">N</div>
+          </div>
+          <div class="hint">Guaranteed in the chambers ahead: <b>AN</b></div>
+        </div>
+
+        <div class="panel">
+          <div class="lbl">The route</div>
+          <svg viewBox="0 0 220 240" width="100%" height="210" style="margin-top:8px">
+            <line class="edge" x1="60" y1="200" x2="110" y2="130" /><line class="edge" x1="160" y1="200" x2="110" y2="130" />
+            <line class="edge dim" x1="110" y1="130" x2="70" y2="60" /><line class="edge dim" x1="110" y1="130" x2="160" y2="60" />
+            <circle class="node solved" cx="60" cy="200" r="20" /><text class="nlabel" x="60" y="200">✓</text>
+            <circle class="node solved" cx="160" cy="200" r="20" /><text class="nlabel" x="160" y="200">✓</text>
+            <circle class="node cur" cx="110" cy="130" r="22" /><text class="nlabel" x="110" y="130">?</text>
+            <circle class="node" cx="70" cy="60" r="20" /><text class="nlabel" x="70" y="60">✕</text>
+            <circle class="node" cx="160" cy="60" r="20" /><text class="nlabel" x="160" y="62" fill="#8a3b2e">★</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="panel">
+          <div class="lbl">Palette</div>
+          <div class="swatches"><div class="sw" style="background:#ece0bf"></div><div class="sw" style="background:#3a2c19"></div><div class="sw" style="background:#8a3b2e"></div><div class="sw" style="background:#9c6f24"></div><div class="sw" style="background:#9bb39b"></div></div>
+          <p class="note">Tea-stained paper, oak-gall ink, oxblood and a faded sea-green for meta tiles. Routes are dotted trails between island-nodes.</p>
+        </div>
+        <div class="panel">
+          <div class="lbl">Type</div>
+          <div class="type-display">Cinzel</div>
+          <div class="type-body">Spectral italic — clues read like log entries</div>
+          <p class="note">Best for: the "Explorer's Labyrinth / treasure" fantasy. Warm, premium, story-forward. Risk: less "modern app."</p>
+        </div>
+      </div>
+
+      <a class="back" href="./index.html">← all mood boards</a>
+    </div>
+  </body>
+</html>

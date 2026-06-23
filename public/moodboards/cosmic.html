@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood board — Celestial Atlas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet" />
+    <style>
+      :root { --bg:#080c24; --panel:#101638; --line:#2a356e; --gold:#f5d67b; --star:#eaf0ff; --teal:#67e8d4; --rose:#c89bff; --text:#dfe5ff; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:'Outfit', sans-serif; color: var(--text); min-height:100vh;
+        background:
+          radial-gradient(60% 50% at 78% 8%, #2a2168 0%, transparent 55%),
+          radial-gradient(50% 50% at 10% 100%, #122a52 0%, transparent 55%),
+          linear-gradient(#070a1e, #0a0f2c);
+        background-attachment: fixed; overflow-x: hidden; }
+      .stars { position: fixed; inset:0; z-index:0; pointer-events:none;
+        background-image: radial-gradient(1.4px 1.4px at 20% 30%, #fff, transparent), radial-gradient(1.2px 1.2px at 70% 20%, #cfe, transparent),
+        radial-gradient(1.6px 1.6px at 40% 70%, #fff, transparent), radial-gradient(1px 1px at 85% 60%, #fff, transparent),
+        radial-gradient(1.3px 1.3px at 55% 45%, #ffe9b0, transparent), radial-gradient(1px 1px at 12% 80%, #fff, transparent);
+        opacity:.8; }
+      .wrap { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:26px 18px 80px; }
+      .top { display:flex; align-items:center; justify-content:space-between; border:1px solid var(--line); border-radius:14px;
+        padding:12px 16px; background:rgba(16,22,56,.6); backdrop-filter: blur(8px); }
+      .logo { font-family:'Cormorant Garamond'; font-weight:600; font-size:20px; letter-spacing:.18em; color: var(--gold); }
+      .diff { font-size:11px; letter-spacing:.2em; padding:5px 12px; border-radius:999px; color:var(--gold); border:1px solid #f5d67b66; }
+      h1 { font-family:'Cormorant Garamond'; font-weight:600; font-size: clamp(42px, 8vw, 84px); margin: 36px 0 2px; color:#fff;
+        text-shadow: 0 0 30px #f5d67b44; letter-spacing:.01em; }
+      .vibe { color: var(--teal); letter-spacing:.16em; text-transform:uppercase; font-size:12px; }
+      .cards { display:grid; gap:18px; grid-template-columns:1.2fr .8fr; margin-top:30px; }
+      @media (max-width:720px){ .cards{ grid-template-columns:1fr; } }
+      .panel { border:1px solid var(--line); border-radius:18px; padding:22px; background: linear-gradient(180deg, rgba(20,26,64,.7), rgba(12,16,42,.7));
+        box-shadow: 0 30px 70px #0009, inset 0 1px 0 #ffffff10; }
+      .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+      .chip { font-size:12px; padding:5px 12px; border-radius:999px; border:1px solid var(--line); color: var(--teal); }
+      .chip.gold { color: var(--gold); border-color:#f5d67b55; }
+      .clue { font-family:'Cormorant Garamond'; font-size:27px; line-height:1.25; text-align:center; margin:6px 0 24px; color:#fff; }
+      .squares { display:flex; gap:9px; justify-content:center; flex-wrap:wrap; }
+      .sq { width:46px; height:54px; display:grid; place-items:center; border-radius:10px; font-weight:600; font-size:24px; color:#fff;
+        background: radial-gradient(120% 120% at 50% 0%, #1a2150, #0c1130); border:1px solid var(--line); }
+      .sq.bridge { border-color: var(--gold); box-shadow: 0 0 16px #f5d67b66; color: var(--gold); }
+      .sq.meta { border-color: var(--rose); box-shadow: 0 0 18px #c89bff66; }
+      .hint { text-align:center; color:#9aa6d8; margin-top:16px; font-size:13px; }
+      .edge { stroke: #4a57a8; stroke-width:1.5; }
+      .edge.dim { stroke:#2a356e; stroke-dasharray:3 6; }
+      .node { fill:#0c1130; stroke-width:2; }
+      .node.solved { stroke: var(--teal); filter: drop-shadow(0 0 7px var(--teal)); }
+      .node.cur { stroke: var(--gold); filter: drop-shadow(0 0 10px var(--gold)); }
+      .node.lock { stroke:#39427e; }
+      .nlabel { fill:#fff; font-size:14px; text-anchor:middle; dominant-baseline:middle; }
+      .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px; }
+      @media (max-width:720px){ .meta-row{ grid-template-columns:1fr; } }
+      .swatches { display:flex; gap:8px; margin-top:10px; }
+      .sw { flex:1; height:46px; border-radius:8px; border:1px solid #ffffff14; }
+      .lbl { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:#9aa6d8; }
+      .note { color:#c7cef2; line-height:1.65; font-size:14px; margin-top:8px; }
+      .type-display { font-family:'Cormorant Garamond'; font-weight:600; font-size:34px; color: var(--gold); }
+      .type-body { font-size:15px; color:#c7cef2; }
+      a.back { display:inline-block; margin-top:34px; color: var(--gold); text-decoration:none; letter-spacing:.1em; }
+      a.back:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="stars"></div>
+    <div class="wrap">
+      <div class="top"><span class="logo">CRYPTIC MAZE</span><span class="diff">HARD</span></div>
+      <h1>Celestial Atlas</h1>
+      <div class="vibe">star chart · gold constellations · calm &amp; premium</div>
+
+      <div class="cards">
+        <div class="panel">
+          <div class="chips"><span class="chip gold">⚡ Token</span><span class="chip gold">🅰 Vowel Flare</span><span class="chip">◆ Meta letter</span></div>
+          <div class="clue">Domed Roman temple dedicated to all the gods</div>
+          <div class="squares">
+            <div class="sq">P</div><div class="sq bridge">A</div><div class="sq bridge">N</div><div class="sq">T</div>
+            <div class="sq">H</div><div class="sq meta">E</div><div class="sq">O</div><div class="sq">N</div>
+          </div>
+          <div class="hint">✦ Guaranteed in every room ahead: <span style="color:var(--gold)">AN</span></div>
+        </div>
+        <div class="panel">
+          <div class="lbl">The constellation</div>
+          <svg viewBox="0 0 220 240" width="100%" height="210" style="margin-top:8px">
+            <line class="edge" x1="60" y1="200" x2="110" y2="130" /><line class="edge" x1="160" y1="200" x2="110" y2="130" />
+            <line class="edge dim" x1="110" y1="130" x2="70" y2="60" /><line class="edge dim" x1="110" y1="130" x2="160" y2="60" />
+            <circle class="node solved" cx="60" cy="200" r="19" /><text class="nlabel" x="60" y="200">✓</text>
+            <circle class="node solved" cx="160" cy="200" r="19" /><text class="nlabel" x="160" y="200">✓</text>
+            <circle class="node cur" cx="110" cy="130" r="22" /><text class="nlabel" x="110" y="130">?</text>
+            <circle class="node lock" cx="70" cy="60" r="19" /><text class="nlabel" x="70" y="60" fill="#5b639f">🔒</text>
+            <circle class="node lock" cx="160" cy="60" r="19" /><text class="nlabel" x="160" y="61" fill="#f5d67b">★</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="panel">
+          <div class="lbl">Palette</div>
+          <div class="swatches"><div class="sw" style="background:#080c24"></div><div class="sw" style="background:#f5d67b"></div><div class="sw" style="background:#67e8d4"></div><div class="sw" style="background:#c89bff"></div><div class="sw" style="background:#eaf0ff"></div></div>
+          <p class="note">Deep midnight blues, warm gold, and a teal/violet pair for tokens and meta. Edges are faint constellation lines; solved nodes shine like stars.</p>
+        </div>
+        <div class="panel">
+          <div class="lbl">Type</div>
+          <div class="type-display">Cormorant</div>
+          <div class="type-body">Outfit — clean sans for UI &amp; squares</div>
+          <p class="note">Best for: an elegant, "grown-up" puzzle that still feels magical. Pairs beautifully with the meta-puzzle finale.</p>
+        </div>
+      </div>
+
+      <a class="back" href="./index.html">← all mood boards</a>
+    </div>
+  </body>
+</html>

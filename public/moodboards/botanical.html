@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood board — Cozy Botanical</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --paper:#f7f2e7; --paper2:#efe7d4; --ink:#43463b; --sage:#6f9072; --sage-d:#4f6b54; --terra:#cd7a52; --rose:#c98aa0; --line:#e0d8c4; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:'Nunito', sans-serif; color: var(--ink); min-height:100vh;
+        background:
+          radial-gradient(70% 50% at 90% 0%, #eef3e6 0%, transparent 55%),
+          radial-gradient(60% 50% at 0% 100%, #f6ece2 0%, transparent 55%),
+          var(--paper); background-attachment: fixed; }
+      .wrap { max-width:940px; margin:0 auto; padding:26px 18px 80px; position:relative; }
+      .leaf { position:absolute; opacity:.5; }
+      .top { display:flex; align-items:center; justify-content:space-between; background:#fffdf7; border:1px solid var(--line);
+        border-radius:18px; padding:12px 18px; box-shadow:0 6px 20px #43463b0f; }
+      .logo { font-family:'Fraunces'; font-weight:800; color: var(--sage-d); letter-spacing:.01em; }
+      .diff { font-size:11px; font-weight:700; letter-spacing:.12em; padding:5px 12px; border-radius:999px; background:#eaf0e6; color: var(--sage-d); }
+      h1 { font-family:'Fraunces'; font-weight:800; font-size: clamp(40px, 8vw, 76px); margin: 36px 0 4px; color: var(--sage-d); letter-spacing:-.01em; }
+      .vibe { color: var(--terra); font-weight:700; letter-spacing:.04em; }
+      .cards { display:grid; gap:18px; grid-template-columns:1.2fr .8fr; margin-top:28px; }
+      @media (max-width:720px){ .cards{ grid-template-columns:1fr; } }
+      .card { background:#fffdf7; border:1px solid var(--line); border-radius:22px; padding:22px; box-shadow:0 10px 28px #43463b10; }
+      .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+      .chip { font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; background:#f0ece0; color: var(--ink); }
+      .chip.warm { background:#f7e7da; color: var(--terra); }
+      .clue { font-family:'Fraunces'; font-weight:600; font-size:25px; line-height:1.3; text-align:center; margin:6px 0 24px; color: var(--ink); }
+      .squares { display:flex; gap:9px; justify-content:center; flex-wrap:wrap; }
+      .sq { width:46px; height:54px; display:grid; place-items:center; border-radius:14px; font-family:'Fraunces'; font-weight:700; font-size:23px; color: var(--ink);
+        background:#f4efe2; border:2px solid #e4dcc8; box-shadow: inset 0 -2px 0 #00000008; }
+      .sq.bridge { border-color: var(--terra); box-shadow:0 0 0 3px #cd7a5226; color: var(--terra); }
+      .sq.meta { border-color: var(--rose); background:#f7e8ee; }
+      .hint { text-align:center; color: var(--sage-d); margin-top:16px; font-weight:600; font-size:14px; }
+      .edge { stroke: var(--sage); stroke-width:3; stroke-linecap:round; }
+      .edge.dim { stroke:#d6cfbd; stroke-dasharray:2 8; }
+      .node { fill:#fffdf7; stroke: var(--sage); stroke-width:3; }
+      .node.solved { fill:#e7efe3; }
+      .node.cur { stroke: var(--terra); stroke-width:4; }
+      .node.lock { stroke:#d6cfbd; }
+      .nlabel { fill: var(--sage-d); font-family:'Fraunces'; font-weight:700; font-size:15px; text-anchor:middle; dominant-baseline:middle; }
+      .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px; }
+      @media (max-width:720px){ .meta-row{ grid-template-columns:1fr; } }
+      .swatches { display:flex; gap:8px; margin-top:10px; }
+      .sw { flex:1; height:46px; border-radius:12px; border:1px solid #00000010; }
+      .lbl { font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color: var(--sage-d); }
+      .note { color: var(--ink); line-height:1.65; font-size:14px; margin-top:8px; }
+      .type-display { font-family:'Fraunces'; font-weight:800; font-size:32px; color: var(--sage-d); }
+      .type-body { font-size:15px; color: var(--ink); }
+      a.back { display:inline-block; margin-top:32px; color: var(--terra); font-weight:700; text-decoration:none; }
+      a.back:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <svg class="leaf" style="top:90px;right:-10px;width:120px" viewBox="0 0 100 100"><path d="M50 95 C10 70 10 20 50 5 C90 20 90 70 50 95 Z" fill="none" stroke="#6f9072" stroke-width="2"/><path d="M50 95 L50 12" stroke="#6f9072" stroke-width="2"/></svg>
+      <div class="top"><span class="logo">Cryptic Maze</span><span class="diff">HARD</span></div>
+
+      <h1>Cozy Botanical</h1>
+      <div class="vibe">cream &amp; sage · soft serif · Sunday-morning calm</div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="chips"><span class="chip warm">⚡ Token</span><span class="chip warm">🅰 Vowel Flare</span><span class="chip">◆ Meta letter</span></div>
+          <div class="clue">Domed Roman temple dedicated to all the gods</div>
+          <div class="squares">
+            <div class="sq">P</div><div class="sq bridge">A</div><div class="sq bridge">N</div><div class="sq">T</div>
+            <div class="sq">H</div><div class="sq meta">E</div><div class="sq">O</div><div class="sq">N</div>
+          </div>
+          <div class="hint">🌿 Guaranteed in every room ahead: AN</div>
+        </div>
+        <div class="card">
+          <div class="lbl">The garden path</div>
+          <svg viewBox="0 0 220 240" width="100%" height="210" style="margin-top:8px">
+            <line class="edge" x1="60" y1="200" x2="110" y2="130" /><line class="edge" x1="160" y1="200" x2="110" y2="130" />
+            <line class="edge dim" x1="110" y1="130" x2="70" y2="60" /><line class="edge dim" x1="110" y1="130" x2="160" y2="60" />
+            <circle class="node solved" cx="60" cy="200" r="20" /><text class="nlabel" x="60" y="200">✓</text>
+            <circle class="node solved" cx="160" cy="200" r="20" /><text class="nlabel" x="160" y="200">✓</text>
+            <circle class="node cur" cx="110" cy="130" r="22" /><text class="nlabel" x="110" y="130">?</text>
+            <circle class="node lock" cx="70" cy="60" r="20" /><text class="nlabel" x="70" y="60" fill="#b7ae99">🔒</text>
+            <circle class="node lock" cx="160" cy="60" r="20" /><text class="nlabel" x="160" y="61" fill="#cd7a52">★</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="card">
+          <div class="lbl">Palette</div>
+          <div class="swatches"><div class="sw" style="background:#f7f2e7"></div><div class="sw" style="background:#6f9072"></div><div class="sw" style="background:#cd7a52"></div><div class="sw" style="background:#c98aa0"></div><div class="sw" style="background:#43463b"></div></div>
+          <p class="note">Warm paper, sage greens, terracotta and a dusty-rose meta tile. Rounded cards, gentle shadows, a few line-art leaves.</p>
+        </div>
+        <div class="card">
+          <div class="lbl">Type</div>
+          <div class="type-display">Fraunces</div>
+          <div class="type-body">Nunito — friendly rounded sans for UI</div>
+          <p class="note">Best for: broad, casual appeal (think a wholesome daily puzzle). Approachable and calm — the opposite of intimidating.</p>
+        </div>
+      </div>
+
+      <a class="back" href="./index.html">← all mood boards</a>
+    </div>
+  </body>
+</html>

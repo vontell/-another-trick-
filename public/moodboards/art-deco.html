@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood board — Gilded Deco</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cinzel:wght@500;700;900&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+    <style>
+      :root { --bg:#0e0d09; --panel:#15130c; --gold:#d4af37; --gold2:#f0d98a; --cream:#efe6cb; --emerald:#1f7a5c; --line:#3a3119; --text:#e7ddc2; }
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:'Jost', sans-serif; color: var(--text); min-height:100vh; background: var(--bg);
+        background-image:
+          radial-gradient(60% 50% at 50% -5%, #2a2410 0%, transparent 60%),
+          repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 64px); }
+      .wrap { max-width:920px; margin:0 auto; padding:24px 18px 80px; }
+      .frame { border:2px solid var(--gold); outline:1px solid var(--gold); outline-offset:5px; border-radius:2px; padding:0; }
+      .top { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line); }
+      .logo { font-family:'Cinzel'; font-weight:900; letter-spacing:.28em; color: var(--gold2); font-size:15px; }
+      .diff { font-family:'Cinzel'; font-size:10px; letter-spacing:.22em; padding:5px 12px; border:1px solid var(--gold); color: var(--gold); }
+      .inner { padding: 30px 22px 26px; }
+      .sun { width:100%; height:60px; display:block; margin: 0 auto 6px; }
+      h1 { font-family:'Poiret One'; font-weight:400; font-size: clamp(40px, 8vw, 80px); text-align:center; color: var(--gold2);
+        letter-spacing:.14em; text-transform:uppercase; margin:2px 0; }
+      .vibe { text-align:center; color: var(--gold); letter-spacing:.3em; text-transform:uppercase; font-size:11px; }
+      .rule { height:1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin:24px 0; }
+      .chips { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+      .chip { font-family:'Cinzel'; font-size:11px; letter-spacing:.1em; padding:6px 14px; border:1px solid var(--line); color: var(--cream); }
+      .chip.gold { color: var(--gold2); border-color: var(--gold); }
+      .clue { font-family:'Cinzel'; font-weight:500; font-size:22px; line-height:1.4; text-align:center; color: var(--cream); margin: 6px auto 24px; max-width:560px; }
+      .squares { display:flex; gap:9px; justify-content:center; flex-wrap:wrap; }
+      .sq { width:46px; height:56px; display:grid; place-items:center; font-family:'Cinzel'; font-weight:700; font-size:24px; color: var(--gold2);
+        background: linear-gradient(180deg, #1a1710, #110f0a); border:1px solid var(--gold); position:relative; }
+      .sq::after { content:''; position:absolute; inset:3px; border:1px solid #d4af3733; }
+      .sq.bridge { box-shadow: 0 0 0 2px var(--gold), 0 0 14px #d4af3766; }
+      .sq.meta { border-color: var(--emerald); color:#7ee0bf; }
+      .sq.meta::after { border-color:#1f7a5c66; }
+      .hint { text-align:center; color: var(--gold); letter-spacing:.12em; margin-top:16px; font-size:13px; }
+      .cols { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:8px; }
+      @media (max-width:720px){ .cols{ grid-template-columns:1fr; } }
+      .lbl { font-family:'Cinzel'; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color: var(--gold); margin-bottom:10px; text-align:center; }
+      .edge { stroke: var(--gold); stroke-width:1.2; }
+      .edge.dim { stroke:#3a3119; }
+      .node { fill:#110f0a; stroke: var(--gold); stroke-width:1.4; }
+      .node.cur { stroke: var(--gold2); stroke-width:2.4; }
+      .node.lock { stroke:#3a3119; }
+      .nlabel { fill: var(--gold2); font-family:'Cinzel'; font-size:14px; text-anchor:middle; dominant-baseline:middle; }
+      .swatches { display:flex; gap:8px; }
+      .sw { flex:1; height:44px; border:1px solid #ffffff14; }
+      .note { color: var(--cream); line-height:1.65; font-size:14px; margin-top:10px; text-align:center; }
+      a.back { display:block; text-align:center; margin-top:30px; color: var(--gold); font-family:'Cinzel'; letter-spacing:.16em; text-decoration:none; font-size:13px; }
+      a.back:hover { color: var(--gold2); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="frame">
+        <div class="top"><span class="logo">CRYPTIC MAZE</span><span class="diff">HARD</span></div>
+        <div class="inner">
+          <svg class="sun" viewBox="0 0 200 60">
+            <g stroke="#d4af37" stroke-width="1" fill="none" opacity=".85">
+              <path d="M100 58 L100 6 M100 58 L70 12 M100 58 L130 12 M100 58 L44 22 M100 58 L156 22 M100 58 L22 36 M100 58 L178 36"/>
+              <path d="M40 58 a60 60 0 0 1 120 0" /><path d="M58 58 a42 42 0 0 1 84 0"/>
+            </g>
+          </svg>
+          <h1>Gilded&nbsp;Deco</h1>
+          <div class="vibe">black &amp; gold · sunbursts · symmetry</div>
+          <div class="rule"></div>
+
+          <div class="chips"><span class="chip gold">⚡ Token</span><span class="chip gold">🅰 Vowel Flare</span><span class="chip">◆ Meta Letter</span></div>
+          <div class="clue">Domed Roman temple dedicated to all the gods</div>
+          <div class="squares">
+            <div class="sq">P</div><div class="sq bridge">A</div><div class="sq bridge">N</div><div class="sq">T</div>
+            <div class="sq">H</div><div class="sq meta">E</div><div class="sq">O</div><div class="sq">N</div>
+          </div>
+          <div class="hint">— guaranteed ahead · A N —</div>
+
+          <div class="rule"></div>
+          <div class="cols">
+            <div>
+              <div class="lbl">The Ascent</div>
+              <svg viewBox="0 0 220 220" width="100%" height="190">
+                <line class="edge" x1="60" y1="186" x2="110" y2="120" /><line class="edge" x1="160" y1="186" x2="110" y2="120" />
+                <line class="edge dim" x1="110" y1="120" x2="70" y2="54" /><line class="edge dim" x1="110" y1="120" x2="160" y2="54" />
+                <rect class="node" x="46" y="172" width="28" height="28" transform="rotate(45 60 186)"/><text class="nlabel" x="60" y="186">✓</text>
+                <rect class="node" x="146" y="172" width="28" height="28" transform="rotate(45 160 186)"/><text class="nlabel" x="160" y="186">✓</text>
+                <rect class="node cur" x="94" y="104" width="32" height="32" transform="rotate(45 110 120)"/><text class="nlabel" x="110" y="120">?</text>
+                <rect class="node lock" x="56" y="40" width="28" height="28" transform="rotate(45 70 54)"/>
+                <rect class="node lock" x="146" y="40" width="28" height="28" transform="rotate(45 160 54)"/><text class="nlabel" x="160" y="55">★</text>
+              </svg>
+            </div>
+            <div>
+              <div class="lbl">Palette &amp; Type</div>
+              <div class="swatches"><div class="sw" style="background:#0e0d09"></div><div class="sw" style="background:#d4af37"></div><div class="sw" style="background:#f0d98a"></div><div class="sw" style="background:#1f7a5c"></div><div class="sw" style="background:#efe6cb"></div></div>
+              <p class="note"><b style="font-family:'Poiret One';font-size:20px;color:var(--gold2)">Poiret One</b> + Cinzel. Onyx black, leaf-gold, an emerald meta accent. Diamond nodes, sunburst dividers, mirrored symmetry.</p>
+              <p class="note" style="color:var(--gold)">Best for: a chic, members-only puzzle salon. Risk: ornamentation must stay restrained to keep it readable.</p>
+            </div>
+          </div>
+
+          <a class="back" href="./index.html">◆ ALL MOOD BOARDS ◆</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
