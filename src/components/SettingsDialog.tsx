@@ -14,11 +14,11 @@ export default function SettingsDialog({
 }) {
   return (
     <Modal title="Settings" onClose={onClose}>
-      <div className="space-y-5 text-sm text-white/80">
+      <div className="space-y-5 text-sm text-ink/80">
         <label className="flex cursor-pointer items-start justify-between gap-4">
           <span>
-            <span className="font-semibold text-white">Reveal wrong letters</span>
-            <span className="mt-0.5 block text-xs text-white/50">
+            <span className="font-semibold text-ink">Reveal wrong letters</span>
+            <span className="mt-0.5 block text-xs text-ink/50">
               Beginner aid: after a wrong guess, each square is coloured — green (right spot), amber
               (in the word, wrong spot) or grey (not in the word).
             </span>

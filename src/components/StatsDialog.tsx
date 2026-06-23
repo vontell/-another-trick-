@@ -1,4 +1,5 @@
 import Modal from './Modal';
+import Icon from './Icon';
 import type { Aggregate, Stats } from '../game/store';
 import { formatMs } from '../game/store';
 import type { Level } from '../game/types';
@@ -29,32 +30,38 @@ export default function StatsDialog({
         <div className="grid grid-cols-2 gap-2">
           {tiles.map(([label, value]) => (
             <div key={label} className="rounded-lg bg-panel2 px-3 py-2">
-              <div className="text-xl font-bold text-white">{value}</div>
-              <div className="text-xs text-white/50">{label}</div>
+              <div className="text-xl font-bold text-ink">{value}</div>
+              <div className="text-xs text-ink/50">{label}</div>
             </div>
           ))}
         </div>
 
         <div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-white/40">Per level (best)</p>
+          <p className="mb-2 text-xs uppercase tracking-wide text-ink/40">Per level (best)</p>
           <div className="space-y-2">
             {levels.map((lvl) => {
               const s = stats.perLevel[lvl.id];
               return (
                 <div key={lvl.id} className="rounded-lg border border-edge/60 px-3 py-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-white">{lvl.title}</span>
+                    <span className="font-medium text-ink">{lvl.title}</span>
                     <span
                       className={[
-                        'rounded-full px-2 py-0.5 text-xs font-semibold',
-                        s?.completed ? 'bg-good/20 text-good' : 'bg-panel2 text-white/40',
+                        'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold',
+                        s?.completed ? 'bg-good/20 text-good' : 'bg-panel2 text-ink/40',
                       ].join(' ')}
                     >
-                      {s?.completed ? '✓ done' : 'unsolved'}
+                      {s?.completed ? (
+                        <>
+                          <Icon name="check" size={12} strokeWidth={2.4} /> done
+                        </>
+                      ) : (
+                        'unsolved'
+                      )}
                     </span>
                   </div>
                   {s?.completed && (
-                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-white/50">
+                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-ink/50">
                       <span>Maze {formatMs(s.bestMazeMs)}</span>
                       <span>Meta {formatMs(s.bestMetaMs)}</span>
                       <span>Best first-tries {s.bestFirstTries ?? 0}</span>

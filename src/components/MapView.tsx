@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { ResolvedRoom } from '../game/types';
 import type { useGame } from '../game/useGame';
+import Icon from './Icon';
 
 interface Props {
   game: ReturnType<typeof useGame>;
@@ -30,7 +31,7 @@ export default function MapView({ game, onOpenRoom }: Props) {
 
   return (
     <div className="relative mx-auto w-full max-w-2xl px-2" style={{ height }}>
-      {/* Edges */}
+      {/* Routes between rooms */}
       <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
         {rooms.flatMap((r) =>
           r.next.map((nid) => {
@@ -44,60 +45,68 @@ export default function MapView({ game, onOpenRoom }: Props) {
                 y1={yPx(r.row)}
                 x2={`${xPct(child.col)}%`}
                 y2={yPx(child.row)}
-                stroke={active ? '#6ea8fe' : '#2a3357'}
+                stroke={active ? '#8a3b2e' : '#b09a6b'}
                 strokeWidth={active ? 3 : 2}
                 strokeLinecap="round"
-                strokeDasharray={active ? undefined : '5 6'}
+                strokeDasharray="2 7"
+                opacity={active ? 0.95 : 0.55}
               />
             );
           }),
         )}
       </svg>
 
-      {/* Nodes */}
-      {rooms.map((r) => {
+      {/* Rooms */}
+      {rooms.map((r, i) => {
         const st = state(r);
         const left = `${xPct(r.col)}%`;
         const top = yPx(r.row);
-        const showPower = r.powerUp === 'reveal';
+        const showPower = r.powerUp;
         const showMeta = r.metaLetterIndex !== undefined;
         const collected = game.progress.collected.some((c) => c.roomId === r.id);
 
         const base =
-          'absolute z-10 -translate-x-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full border-2 text-lg font-bold transition';
-        // Opaque fills so the (center-to-center) edges never show through nodes.
+          'absolute z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 animate-riseIn items-center justify-center rounded-full border-2 bg-panel shadow-map transition-transform';
         const look =
           st === 'solved'
-            ? 'border-good bg-[#15291f] text-good'
+            ? 'border-meta text-meta'
             : st === 'available'
-              ? 'border-accent bg-panel2 text-accent shadow-[0_0_18px_rgba(110,168,254,0.45)] hover:scale-105'
-              : 'border-edge bg-panel text-white/25';
+              ? 'border-accent text-accent animate-glowpulse hover:scale-110'
+              : 'border-edge text-ink/30';
 
         return (
           <button
             key={r.id}
             disabled={st === 'locked'}
             onClick={() => onOpenRoom(r.id)}
-            className={[base, look, r.isFinal ? 'ring-2 ring-gold/60' : ''].join(' ')}
-            style={{ left, top }}
+            className={[base, look, r.isFinal ? 'ring-2 ring-gold ring-offset-2 ring-offset-paper' : ''].join(' ')}
+            style={{ left, top, animationDelay: `${Math.min(i * 28, 500)}ms` }}
             title={st === 'locked' ? 'Locked' : r.isFinal ? 'Final chamber' : r.clue}
           >
-            {st === 'solved' ? '✓' : st === 'locked' ? '🔒' : r.isFinal ? '★' : '?'}
+            {st === 'solved' ? (
+              <Icon name="check" size={24} strokeWidth={2.2} />
+            ) : st === 'locked' ? (
+              <Icon name="lock" size={20} />
+            ) : r.isFinal ? (
+              <Icon name="chest" size={24} className="text-gold" />
+            ) : (
+              <Icon name="spot" size={24} />
+            )}
 
             {/* Badges */}
             {showPower && st !== 'solved' && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[10px] text-ink">
-                ⚡
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-gold bg-panel text-gold">
+                <Icon name={r.powerUp === 'vowel' ? 'vowel' : 'reveal'} size={11} strokeWidth={2} />
               </span>
             )}
             {showMeta && (
               <span
                 className={[
-                  'absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px]',
-                  collected ? 'bg-meta text-white' : 'bg-meta/40 text-white',
+                  'absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border',
+                  collected ? 'border-meta bg-meta text-cream' : 'border-meta bg-panel text-meta',
                 ].join(' ')}
               >
-                ◆
+                <Icon name="meta" size={11} strokeWidth={2} />
               </span>
             )}
           </button>

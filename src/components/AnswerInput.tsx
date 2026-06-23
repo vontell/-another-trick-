@@ -67,12 +67,14 @@ export default function AnswerInput({
         key={i}
         type="button"
         onClick={() => onCellClick?.(i)}
+        style={status === 'correct' ? { animationDelay: `${i * 55}ms` } : undefined}
         className={[
-          'relative flex items-center justify-center rounded-md border-2 font-mono font-bold uppercase',
+          'relative flex items-center justify-center rounded-md border-2 font-display font-bold uppercase',
           'h-11 w-10 text-2xl sm:h-14 sm:w-12 sm:text-3xl',
           bg,
           border,
-          isCaret ? 'ring-2 ring-accent/50' : '',
+          isCaret ? 'ring-2 ring-accent/40' : '',
+          status === 'correct' ? 'animate-flipIn' : '',
           inBridge && status === 'correct' ? 'outline outline-2 outline-gold -outline-offset-2' : '',
         ].join(' ')}
       >
@@ -104,7 +106,7 @@ export default function AnswerInput({
   return (
     <div
       className={[
-        'flex flex-wrap items-center justify-center gap-x-4 gap-y-2',
+        'flex flex-wrap items-center justify-center gap-x-4 gap-y-2 [perspective:700px]',
         status === 'wrong' ? 'animate-shake' : '',
       ].join(' ')}
     >

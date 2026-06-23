@@ -4,6 +4,7 @@ import type { useGame } from '../game/useGame';
 import AnswerInput, { type CellFeedback } from './AnswerInput';
 import Keyboard from './Keyboard';
 import Tooltip from './Tooltip';
+import Icon from './Icon';
 import { useTyping } from './useTyping';
 import { computeFeedback } from './wordleFeedback';
 import { enumerationText } from '../game/bridges';
@@ -150,57 +151,57 @@ export default function RoomView({
       {/* Header */}
       <div className="flex shrink-0 items-start justify-between gap-3 p-4 pb-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-panel2 px-2.5 py-1 text-xs font-medium text-accent">
+          <span className="rounded-full bg-panel2 px-2.5 py-1 font-display text-[11px] font-semibold tracking-wide text-accent">
             {room.isFinal ? 'Final Chamber' : `Room ${room.id.replace(/^[a-z]/, '')}`}
           </span>
           {room.powerUp === 'reveal' && (
             <Tooltip
-              label="Reveal token: solve this room on your first guess to earn a ⚡ token. Spend one to reveal a letter."
-              className="rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold"
+              label="Reveal token: solve this room on your first guess to earn a Reveal token. Spend one to reveal a letter."
+              className="flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold"
             >
-              ⚡ Token (first try)
+              <Icon name="reveal" size={13} /> Token (first try)
             </Tooltip>
           )}
           {room.powerUp === 'vowel' && (
             <Tooltip
-              label="Vowel Flare: solve this room on your first guess to earn a 🅰 flare. Spend one to reveal all the vowels in a room."
-              className="rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold"
+              label="Vowel Flare: solve this room on your first guess to earn a Vowel Flare. Spend one to reveal all the vowels in a room."
+              className="flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-gold"
             >
-              🅰 Vowel Flare (first try)
+              <Icon name="vowel" size={13} /> Vowel Flare (first try)
             </Tooltip>
           )}
           {room.metaLetterIndex !== undefined && (
             <Tooltip
-              label="Meta letter: this room hides one blue square. Solve it to collect that letter toward the meta puzzle."
-              className="rounded-full bg-meta/20 px-2.5 py-1 text-xs font-medium text-accent"
+              label="Meta letter: this room hides a marked square. Solve it to collect that letter toward the meta puzzle."
+              className="flex items-center gap-1 rounded-full bg-meta/20 px-2.5 py-1 text-xs font-medium text-meta"
             >
-              ◆ Meta letter
+              <Icon name="meta" size={12} /> Meta letter
             </Tooltip>
           )}
         </div>
         <button
           onClick={onClose}
-          className="rounded-lg px-2 py-1 text-xl leading-none text-white/50 hover:bg-panel2 hover:text-white"
+          className="rounded-lg p-1.5 leading-none text-ink/50 hover:bg-panel2 hover:text-ink"
           aria-label="Back to map"
         >
-          ✕
+          <Icon name="close" size={20} />
         </button>
       </div>
 
       {/* Scrollable content */}
       <div className="flex flex-1 flex-col overflow-y-auto px-4">
         <div className="my-auto w-full space-y-5 py-4">
-          <p className="text-center text-xl font-semibold leading-snug text-white sm:text-2xl lg:text-3xl">
+          <p className="text-center font-body text-2xl font-medium italic leading-snug text-ink sm:text-[28px] lg:text-3xl">
             {room.clue}
           </p>
-          <p className="text-center text-sm text-white/40">
+          <p className="text-center text-sm text-ink/40">
             {enumerationText(room.answer, room.enumeration)}
             {room.enumeration && room.enumeration.length > 1 ? ' · multiple words' : ' letters'}
           </p>
 
           {!solved && guaranteed.length > 0 && (
             <div className="flex flex-wrap items-center justify-center gap-2 rounded-lg bg-panel2/60 px-3 py-2">
-              <span className="text-xs text-white/50">Guaranteed inside (somewhere):</span>
+              <span className="text-xs text-ink/50">Guaranteed inside (somewhere):</span>
               {guaranteed.map((g) => (
                 <span
                   key={g}
@@ -232,32 +233,32 @@ export default function RoomView({
 
         {solved && (
           <div className="space-y-3 pb-2 animate-pop">
-            <p className="text-center text-sm font-semibold text-good">
-              Correct! {alreadySolved ? '' : 'Path cleared.'}
+            <p className="flex items-center justify-center gap-2 font-display text-base font-bold text-good">
+              <Icon name="check" size={18} strokeWidth={2.2} />
+              {alreadySolved ? 'Solved' : 'Path cleared!'}
             </p>
             {justEarned && (
-              <p className="rounded-lg bg-gold/10 px-3 py-2 text-center text-sm text-gold">
-                {justEarned === 'reveal'
-                  ? '⚡ First-try bonus — you earned a Reveal token!'
-                  : '🅰 First-try bonus — you earned a Vowel Flare!'}
+              <p className="flex items-center justify-center gap-2 rounded-lg bg-gold/10 px-3 py-2 text-center text-sm text-gold">
+                <Icon name={justEarned === 'reveal' ? 'reveal' : 'vowel'} size={15} />
+                First-try bonus — you earned a {justEarned === 'reveal' ? 'Reveal token' : 'Vowel Flare'}!
               </p>
             )}
             {room.metaLetterIndex !== undefined && (
-              <p className="rounded-lg bg-meta/15 px-3 py-2 text-center text-sm text-accent">
-                ◆ Collected the letter{' '}
-                <span className="font-bold">{room.answer[room.metaLetterIndex]}</span> for the meta
-                puzzle.
+              <p className="flex items-center justify-center gap-1.5 rounded-lg bg-meta/15 px-3 py-2 text-center text-sm text-meta">
+                <Icon name="meta" size={14} />
+                Collected the letter{' '}
+                <span className="font-bold text-ink">{room.answer[room.metaLetterIndex]}</span> for the meta.
               </p>
             )}
             {room.bridge && (
-              <p className="rounded-lg bg-panel2 px-3 py-2 text-center text-sm text-white/70">
+              <p className="rounded-lg bg-panel2 px-3 py-2 text-center text-sm text-ink/70">
                 The outlined pair{' '}
                 <span className="font-mono font-bold text-gold">{room.bridge.text}</span> is
                 guaranteed in every room ahead.
               </p>
             )}
             {newlyUnlocked.length > 0 && (
-              <p className="text-center text-xs text-white/40">
+              <p className="text-center text-xs text-ink/40">
                 Opened {newlyUnlocked.length} new room{newlyUnlocked.length > 1 ? 's' : ''}.
               </p>
             )}
@@ -274,7 +275,7 @@ export default function RoomView({
               <button
                 onClick={handleSubmit}
                 disabled={!filled}
-                className="flex-1 rounded-xl bg-accent px-4 py-2.5 font-semibold text-ink transition enabled:hover:brightness-110 disabled:opacity-40"
+                className="flex-1 rounded-xl bg-accent px-4 py-2.5 font-semibold text-cream transition enabled:hover:brightness-110 disabled:opacity-40"
               >
                 Submit
               </button>
@@ -282,17 +283,17 @@ export default function RoomView({
                 onClick={useReveal}
                 disabled={tokens.reveal <= 0}
                 title="Reveal a letter"
-                className="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2.5 text-sm font-semibold text-gold transition enabled:hover:bg-gold/20 disabled:opacity-30"
+                className="flex items-center gap-1.5 rounded-xl border border-gold/40 bg-gold/10 px-3 py-2.5 text-sm font-semibold text-gold transition enabled:hover:bg-gold/20 disabled:opacity-30"
               >
-                ⚡ {tokens.reveal}
+                <Icon name="reveal" size={16} /> {tokens.reveal}
               </button>
               <button
                 onClick={useVowel}
                 disabled={tokens.vowel <= 0}
                 title="Vowel Flare: reveal all vowels"
-                className="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2.5 text-sm font-semibold text-gold transition enabled:hover:bg-gold/20 disabled:opacity-30"
+                className="flex items-center gap-1.5 rounded-xl border border-gold/40 bg-gold/10 px-3 py-2.5 text-sm font-semibold text-gold transition enabled:hover:bg-gold/20 disabled:opacity-30"
               >
-                🅰 {tokens.vowel}
+                <Icon name="vowel" size={16} /> {tokens.vowel}
               </button>
             </div>
             <Keyboard onKey={press} />
@@ -300,7 +301,7 @@ export default function RoomView({
         ) : (
           <button
             onClick={handleAdvance}
-            className="w-full rounded-xl bg-accent px-4 py-3 font-semibold text-ink hover:brightness-110"
+            className="w-full rounded-xl bg-accent px-4 py-3 font-semibold text-cream hover:brightness-110"
           >
             {room.isFinal
               ? 'Continue to the meta puzzle →'
@@ -322,8 +323,8 @@ export default function RoomView({
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex items-stretch justify-center bg-black/70 sm:items-center sm:p-4">
-      <div className="flex h-full w-full max-w-lg flex-col border-edge bg-panel shadow-2xl sm:h-auto sm:max-h-[94vh] sm:rounded-2xl sm:border">
+    <div className="fixed inset-0 z-30 flex animate-fadeIn items-stretch justify-center bg-ink/50 sm:items-center sm:p-4">
+      <div className="flex h-full w-full max-w-lg animate-riseIn flex-col border-edge bg-panel shadow-2xl sm:h-auto sm:max-h-[94vh] sm:rounded-2xl sm:border-2">
         {body}
       </div>
     </div>

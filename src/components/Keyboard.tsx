@@ -28,8 +28,8 @@ export default function Keyboard({ onKey, disabled, enterLabel = 'Enter' }: Prop
                 disabled={disabled}
                 onClick={() => onKey(key)}
                 className={[
-                  'flex h-11 items-center justify-center rounded-md bg-panel2 font-semibold text-white',
-                  'active:bg-edge disabled:opacity-40 sm:h-12',
+                  'flex h-11 items-center justify-center rounded-md border border-edge/70 bg-panel2 font-display font-semibold text-ink shadow-[0_1px_0_rgba(44,33,20,0.18)]',
+                  'transition active:translate-y-px active:bg-edge disabled:opacity-40 sm:h-12',
                   wide ? 'px-2 text-xs grow-[1.5]' : 'grow text-base',
                 ].join(' ')}
                 aria-label={key === 'BACK' ? 'Backspace' : key === 'ENTER' ? enterLabel : key}
