@@ -69,7 +69,7 @@ export default function AnswerInput({
         onClick={() => onCellClick?.(i)}
         className={[
           'relative flex items-center justify-center rounded-md border-2 font-mono font-bold uppercase',
-          'h-10 w-9 text-xl sm:h-12 sm:w-11 sm:text-2xl',
+          'h-11 w-10 text-2xl sm:h-14 sm:w-12 sm:text-3xl',
           bg,
           border,
           isCaret ? 'ring-2 ring-accent/50' : '',
