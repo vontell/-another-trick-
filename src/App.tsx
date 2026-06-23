@@ -157,7 +157,7 @@ function GameScreen({
           <div className="mx-auto max-w-2xl px-4 pb-6 pt-4">
             <p className="mb-1 text-center text-sm text-ink/50">{game.resolved.subtitle}</p>
             <p className="mb-2 text-center text-xs text-ink/30">Start at the bottom · reach the top</p>
-            <MapView game={game} onOpenRoom={setOpenRoomId} big={isDesktop} />
+            <MapView game={game} onOpenRoom={setOpenRoomId} big={isDesktop} currentId={openRoomId} />
           </div>
 
           {game.finalSolved && !showMeta && (!openRoomId || isDesktop) && (
