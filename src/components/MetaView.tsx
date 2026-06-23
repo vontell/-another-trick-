@@ -4,7 +4,8 @@ import AnswerInput, { type CellFeedback } from './AnswerInput';
 import Keyboard from './Keyboard';
 import Icon from './Icon';
 import { useTyping } from './useTyping';
-import { computeFeedback } from './wordleFeedback';
+import { computeFeedback, accumulate } from './wordleFeedback';
+import FoundLetters from './FoundLetters';
 import { enumerationText } from '../game/bridges';
 
 interface Props {
@@ -27,6 +28,7 @@ export default function MetaView({ game, onClose, assistWrongLetters = false }: 
     alreadySolved ? 'correct' : 'idle',
   );
   const [feedback, setFeedback] = useState<(CellFeedback | undefined)[] | undefined>();
+  const [discovered, setDiscovered] = useState<Record<string, CellFeedback>>({});
   const [showHint, setShowHint] = useState(false);
 
   // Start the meta timer when the puzzle is opened.
@@ -47,7 +49,11 @@ export default function MetaView({ game, onClose, assistWrongLetters = false }: 
       setFeedback(undefined);
     } else {
       setStatus('wrong');
-      if (assistWrongLetters) setFeedback(computeFeedback(cells, meta.answer));
+      if (assistWrongLetters) {
+        const fb = computeFeedback(cells, meta.answer);
+        setFeedback(fb);
+        setDiscovered((prev) => accumulate(prev, cells, fb));
+      }
     }
   };
 
@@ -149,6 +155,8 @@ export default function MetaView({ game, onClose, assistWrongLetters = false }: 
           {status === 'wrong' && (
             <p className="text-center text-sm text-bad">Not the treasure — keep thinking.</p>
           )}
+
+          {!solved && assistWrongLetters && <FoundLetters discovered={discovered} />}
 
           {solved && (
             <div className="space-y-3 pb-2 text-center">

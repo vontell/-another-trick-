@@ -1,5 +1,23 @@
 import type { CellFeedback } from './AnswerInput';
 
+const RANK: Record<CellFeedback, number> = { absent: 1, present: 2, correct: 3 };
+
+/** Merge a guess's per-square feedback into an accumulated letter→status map
+ *  (a better status for a letter always wins). */
+export function accumulate(
+  prev: Record<string, CellFeedback>,
+  guess: string[],
+  fb: CellFeedback[],
+): Record<string, CellFeedback> {
+  const next = { ...prev };
+  guess.forEach((ch, i) => {
+    if (!ch) return;
+    const s = fb[i];
+    if (!next[ch] || RANK[s] > RANK[next[ch]]) next[ch] = s;
+  });
+  return next;
+}
+
 /** Wordle-style per-square feedback comparing a guess to the answer. */
 export function computeFeedback(guess: string[], answer: string): CellFeedback[] {
   const res: CellFeedback[] = answer.split('').map(() => 'absent');

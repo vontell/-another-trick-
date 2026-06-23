@@ -6,7 +6,8 @@ import Keyboard from './Keyboard';
 import Tooltip from './Tooltip';
 import Icon from './Icon';
 import { useTyping } from './useTyping';
-import { computeFeedback } from './wordleFeedback';
+import { computeFeedback, accumulate } from './wordleFeedback';
+import FoundLetters from './FoundLetters';
 import { enumerationText } from '../game/bridges';
 
 interface Props {
@@ -38,6 +39,7 @@ export default function RoomView({
     alreadySolved ? 'correct' : 'idle',
   );
   const [feedback, setFeedback] = useState<(CellFeedback | undefined)[] | undefined>();
+  const [discovered, setDiscovered] = useState<Record<string, CellFeedback>>({});
   const [justEarned, setJustEarned] = useState<'reveal' | 'vowel' | null>(null);
 
   // Start the maze timer the first time any room is opened.
@@ -74,7 +76,11 @@ export default function RoomView({
       if (wasFirstTry && room.powerUp) setJustEarned(room.powerUp);
     } else {
       setStatus('wrong');
-      if (assistWrongLetters) setFeedback(computeFeedback(cells, room.answer));
+      if (assistWrongLetters) {
+        const fb = computeFeedback(cells, room.answer);
+        setFeedback(fb);
+        setDiscovered((prev) => accumulate(prev, cells, fb));
+      }
     }
   };
 
@@ -230,6 +236,8 @@ export default function RoomView({
         {status === 'wrong' && (
           <p className="text-center text-sm text-bad">Not quite — try again.</p>
         )}
+
+        {!solved && assistWrongLetters && <FoundLetters discovered={discovered} />}
 
         {solved && (
           <div className="space-y-3 pb-2 animate-pop">
