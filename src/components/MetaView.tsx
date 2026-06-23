@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { useGame } from '../game/useGame';
-import AnswerInput from './AnswerInput';
+import AnswerInput, { type CellFeedback } from './AnswerInput';
 import Keyboard from './Keyboard';
 import { useTyping } from './useTyping';
+import { computeFeedback } from './wordleFeedback';
 import { enumerationText } from '../game/bridges';
 
 interface Props {
   game: ReturnType<typeof useGame>;
   onClose: () => void;
+  assistWrongLetters?: boolean;
 }
 
 const empty = (n: number) => Array.from({ length: n }, () => '');
 
-export default function MetaView({ game, onClose }: Props) {
+export default function MetaView({ game, onClose, assistWrongLetters = false }: Props) {
   const meta = game.resolved.meta;
   const L = meta.answer.length;
   const alreadySolved = game.progress.metaSolved;
@@ -23,7 +25,13 @@ export default function MetaView({ game, onClose }: Props) {
   const [status, setStatus] = useState<'idle' | 'wrong' | 'correct'>(
     alreadySolved ? 'correct' : 'idle',
   );
+  const [feedback, setFeedback] = useState<(CellFeedback | undefined)[] | undefined>();
   const [showHint, setShowHint] = useState(false);
+
+  // Start the meta timer when the puzzle is opened.
+  useEffect(() => {
+    game.startMeta();
+  }, [game]);
 
   const solved = status === 'correct';
   const collected = game.progress.collected;
@@ -35,8 +43,10 @@ export default function MetaView({ game, onClose }: Props) {
     if (game.submitMeta(cells.join(''))) {
       setCells(meta.answer.split(''));
       setStatus('correct');
+      setFeedback(undefined);
     } else {
       setStatus('wrong');
+      if (assistWrongLetters) setFeedback(computeFeedback(cells, meta.answer));
     }
   };
 
@@ -45,6 +55,7 @@ export default function MetaView({ game, onClose }: Props) {
     disabled: solved,
     onLetter: (k) => {
       setStatus((s) => (s === 'wrong' ? 'idle' : s));
+      setFeedback(undefined);
       setCells((prev) => {
         if (caret >= L) return prev;
         const next = [...prev];
@@ -57,6 +68,7 @@ export default function MetaView({ game, onClose }: Props) {
     },
     onBackspace: () => {
       setStatus((s) => (s === 'wrong' ? 'idle' : s));
+      setFeedback(undefined);
       setCells((prev) => {
         const next = [...prev];
         if (caret < L && next[caret] !== '') {
@@ -128,6 +140,7 @@ export default function MetaView({ game, onClose }: Props) {
               enumeration={meta.enumeration}
               caret={solved ? undefined : caret}
               onCellClick={solved ? undefined : setCaret}
+              feedback={feedback}
               status={status}
             />
           </div>

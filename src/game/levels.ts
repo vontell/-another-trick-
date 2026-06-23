@@ -175,7 +175,7 @@ const rooms: Room[] = [
     next: ['r18', 'r19'],
     row: 5,
     col: 3,
-    powerUp: 'reveal',
+    powerUp: 'vowel',
   },
   {
     id: 'r17',
@@ -300,6 +300,7 @@ const rooms: Room[] = [
 
 export const LEVEL_1: Level = {
   id: 'level-1',
+  difficulty: 'Easy',
   title: "The Explorer's Labyrinth",
   subtitle: 'Solve a path of clues from the entrances to the final chamber.',
   rooms,
@@ -451,7 +452,7 @@ const rooms2: Room[] = [
     next: ['q15', 'q16'],
     row: 4,
     col: 1,
-    powerUp: 'reveal',
+    powerUp: 'vowel',
   },
   {
     id: 'q13',
@@ -610,6 +611,7 @@ const rooms2: Room[] = [
 
 export const LEVEL_2: Level = {
   id: 'level-2',
+  difficulty: 'Hard',
   title: "The Cryptographer's Vault",
   subtitle: 'Crack the cryptic clues, then decode the eight blue letters.',
   rooms: rooms2,
@@ -772,7 +774,7 @@ const rooms3: Room[] = [
     next: ['m15', 'm16'],
     row: 4,
     col: 3,
-    powerUp: 'reveal',
+    powerUp: 'vowel',
   },
   {
     id: 'm14',
@@ -930,6 +932,7 @@ const rooms3: Room[] = [
 
 export const LEVEL_3: Level = {
   id: 'level-3',
+  difficulty: 'Medium',
   title: "The Wordsmith's Gauntlet",
   subtitle: 'A full crossword of single and multi-word answers, then the meta.',
   rooms: rooms3,

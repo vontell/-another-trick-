@@ -1,4 +1,6 @@
-export type PowerUp = 'reveal';
+export type PowerUp = 'reveal' | 'vowel';
+
+export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Extra Hard';
 
 /**
  * A single room in the maze. A room is one crossword/cryptic clue.
@@ -48,6 +50,8 @@ export interface Level {
   id: string;
   title: string;
   subtitle: string;
+  /** Overall maze difficulty, NYT-crossword style. */
+  difficulty: Difficulty;
   rooms: Room[];
   /** Rooms unlocked from the start. */
   startRoomIds: string[];

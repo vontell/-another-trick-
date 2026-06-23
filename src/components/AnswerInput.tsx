@@ -1,3 +1,5 @@
+export type CellFeedback = 'correct' | 'present' | 'absent';
+
 interface Props {
   /** Current letters, one per square ('' for empty). Length = number of squares. */
   cells: string[];
@@ -9,6 +11,8 @@ interface Props {
   onCellClick?: (i: number) => void;
   /** Map of position -> revealed letter (shown faintly as a hint). */
   revealed?: Map<number, string>;
+  /** Per-square Wordle-style feedback (beginner "reveal wrong letters" aid). */
+  feedback?: (CellFeedback | undefined)[];
   /** Position of a single collected (blue) meta-letter square. */
   metaIndex?: number;
   /** Position of the guaranteed bridge bigram (outlined), once revealed. */
@@ -23,6 +27,7 @@ export default function AnswerInput({
   caret,
   onCellClick,
   revealed,
+  feedback,
   metaIndex,
   bridgeStart,
   status,
@@ -35,12 +40,22 @@ export default function AnswerInput({
     const isCaret = i === caret && status !== 'correct';
     const isMeta = i === metaIndex;
     const inBridge = bridgeStart !== undefined && (i === bridgeStart || i === bridgeStart + 1);
+    const fb = feedback?.[i];
 
     let bg = 'bg-panel2';
     let border = 'border-edge';
     if (status === 'correct') {
       bg = 'bg-good/20';
       border = 'border-good';
+    } else if (fb === 'correct') {
+      bg = 'bg-good/25';
+      border = 'border-good';
+    } else if (fb === 'present') {
+      bg = 'bg-gold/20';
+      border = 'border-gold';
+    } else if (fb === 'absent') {
+      bg = 'bg-panel';
+      border = 'border-edge/60';
     } else if (status === 'wrong') {
       border = 'border-bad';
     } else if (isCaret) {
