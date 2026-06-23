@@ -41,9 +41,31 @@ function GameScreen({
   const [showMeta, setShowMeta] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Intro: begin at the top (final chamber) and pan down to the start as the
+  // tree fills in. Returning players / reduced-motion just land at the bottom.
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (!el) return;
+    const target = el.scrollHeight - el.clientHeight;
+    if (target <= 0) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || game.solvedCount > 0) {
+      el.scrollTop = target;
+      return;
+    }
+    el.scrollTop = 0;
+    let raf = 0;
+    const startT = performance.now();
+    const delay = 350;
+    const dur = 1700;
+    const tick = (now: number) => {
+      const t = Math.min(1, Math.max(0, (now - startT - delay) / dur));
+      el.scrollTop = target * (1 - Math.pow(1 - t, 3));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Tick the active timer once a second; pause while the tab is hidden.
@@ -135,7 +157,7 @@ function GameScreen({
           <div className="mx-auto max-w-2xl px-4 pb-6 pt-4">
             <p className="mb-1 text-center text-sm text-ink/50">{game.resolved.subtitle}</p>
             <p className="mb-2 text-center text-xs text-ink/30">Start at the bottom · reach the top</p>
-            <MapView game={game} onOpenRoom={setOpenRoomId} />
+            <MapView game={game} onOpenRoom={setOpenRoomId} big={isDesktop} />
           </div>
 
           {game.finalSolved && !showMeta && (!openRoomId || isDesktop) && (

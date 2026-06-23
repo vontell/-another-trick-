@@ -6,11 +6,9 @@ import Icon from './Icon';
 interface Props {
   game: ReturnType<typeof useGame>;
   onOpenRoom: (id: string) => void;
+  /** Larger nodes / spacing on desktop. */
+  big?: boolean;
 }
-
-const TOP_PAD = 64;
-const ROW_GAP = 104;
-const BOTTOM_PAD = 56;
 
 // X position on a 0..100 scale (matches both the SVG viewBox and the nodes' left%).
 function xPct(col: number): number {
@@ -24,8 +22,14 @@ function bowSign(s: string): number {
   return h % 2 === 0 ? 1 : -1;
 }
 
-export default function MapView({ game, onOpenRoom }: Props) {
+export default function MapView({ game, onOpenRoom, big = false }: Props) {
   const { rooms } = game;
+  const NODE = big ? 80 : 56; // px diameter
+  const ROW_GAP = big ? 152 : 104;
+  const TOP_PAD = big ? 90 : 64;
+  const BOTTOM_PAD = big ? 78 : 56;
+  const half = NODE / 2;
+
   const maxRow = useMemo(() => Math.max(...rooms.map((r) => r.row)), [rooms]);
   const height = TOP_PAD + maxRow * ROW_GAP + BOTTOM_PAD;
   // Invert so depth 0 (the start) sits at the BOTTOM and the final room at the top.
@@ -37,9 +41,15 @@ export default function MapView({ game, onOpenRoom }: Props) {
     return 'locked';
   };
 
+  // Fill the tree in from the top (final room first), cascading down to the start.
+  const fillDelay = (row: number) => (maxRow - row) * 70;
+
   return (
-    <div className="relative mx-auto w-full max-w-2xl" style={{ height }}>
-      {/* Routes between rooms — gently curved, hand-inked, drawn in on load */}
+    <div
+      className={['relative mx-auto w-full', big ? 'max-w-3xl' : 'max-w-2xl'].join(' ')}
+      style={{ height }}
+    >
+      {/* Routes between rooms — gently curved, hand-inked, drawn in from the top */}
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full"
         viewBox={`0 0 100 ${height}`}
@@ -54,8 +64,8 @@ export default function MapView({ game, onOpenRoom }: Props) {
             const y1 = yPx(r.row);
             const x2 = xPct(child.col);
             const y2 = yPx(child.row);
-            const mx = (x1 + x2) / 2 + bowSign(r.id + nid) * 6;
-            const my = (y1 + y2) / 2 + 6;
+            const mx = (x1 + x2) / 2 + bowSign(r.id + nid) * 5;
+            const my = (y1 + y2) / 2;
             return (
               <path
                 key={`${r.id}-${nid}`}
@@ -67,7 +77,7 @@ export default function MapView({ game, onOpenRoom }: Props) {
                 vectorEffect="non-scaling-stroke"
                 pathLength={1}
                 opacity={active ? 0.95 : 0.5}
-                style={{ strokeDasharray: 1, animationDelay: `${250 + r.row * 90}ms` }}
+                style={{ strokeDasharray: 1, animationDelay: `${fillDelay(child.row) + 120}ms` }}
                 className="animate-[draw_0.9s_ease-out_both]"
               />
             );
@@ -76,16 +86,12 @@ export default function MapView({ game, onOpenRoom }: Props) {
       </svg>
 
       {/* Rooms */}
-      {rooms.map((r, i) => {
+      {rooms.map((r) => {
         const st = state(r);
-        const left = `${xPct(r.col)}%`;
-        const top = yPx(r.row);
         const showPower = r.powerUp;
         const showMeta = r.metaLetterIndex !== undefined;
         const collected = game.progress.collected.some((c) => c.roomId === r.id);
 
-        const base =
-          'absolute z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 animate-riseIn items-center justify-center rounded-full border-2 bg-panel shadow-map transition-transform';
         const look =
           st === 'solved'
             ? 'border-meta text-meta'
@@ -93,42 +99,57 @@ export default function MapView({ game, onOpenRoom }: Props) {
               ? 'border-accent text-accent animate-glowpulse hover:scale-110'
               : 'border-edge text-ink/30';
 
-        return (
-          <button
-            key={r.id}
-            disabled={st === 'locked'}
-            onClick={() => onOpenRoom(r.id)}
-            className={[base, look, r.isFinal ? 'ring-2 ring-gold ring-offset-2 ring-offset-paper' : ''].join(' ')}
-            style={{ left, top, animationDelay: `${Math.min(i * 26, 520)}ms` }}
-            title={st === 'locked' ? 'Locked' : r.isFinal ? 'Final chamber' : r.clue}
-          >
-            {st === 'solved' ? (
-              <Icon name="check" size={24} strokeWidth={2.2} />
-            ) : st === 'locked' ? (
-              <Icon name="lock" size={20} />
-            ) : r.isFinal ? (
-              <Icon name="chest" size={24} className="text-gold" />
-            ) : (
-              <Icon name="spot" size={24} />
-            )}
+        const iconSize = big ? 34 : 24;
 
-            {/* Badges */}
-            {showPower && st !== 'solved' && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-gold bg-panel text-gold">
-                <Icon name={r.powerUp === 'vowel' ? 'vowel' : 'reveal'} size={11} strokeWidth={2} />
-              </span>
-            )}
-            {showMeta && (
-              <span
-                className={[
-                  'absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border',
-                  collected ? 'border-meta bg-meta text-cream' : 'border-meta bg-panel text-meta',
-                ].join(' ')}
-              >
-                <Icon name="meta" size={11} strokeWidth={2} />
-              </span>
-            )}
-          </button>
+        return (
+          // Wrapper handles positioning (centered via offset, NOT transform) + entrance.
+          <div
+            key={r.id}
+            className="absolute z-10 animate-riseIn"
+            style={{
+              left: `calc(${xPct(r.col)}% - ${half}px)`,
+              top: yPx(r.row) - half,
+              animationDelay: `${fillDelay(r.row) + r.col * 6}ms`,
+            }}
+          >
+            <button
+              disabled={st === 'locked'}
+              onClick={() => onOpenRoom(r.id)}
+              className={[
+                'relative flex items-center justify-center rounded-full border-2 bg-panel shadow-map transition-transform',
+                look,
+                r.isFinal ? 'ring-2 ring-gold ring-offset-2 ring-offset-paper' : '',
+              ].join(' ')}
+              style={{ width: NODE, height: NODE }}
+              title={st === 'locked' ? 'Locked' : r.isFinal ? 'Final chamber' : r.clue}
+            >
+              {st === 'solved' ? (
+                <Icon name="check" size={iconSize} strokeWidth={2.2} />
+              ) : st === 'locked' ? (
+                <Icon name="lock" size={iconSize - 4} />
+              ) : r.isFinal ? (
+                <Icon name="chest" size={iconSize} className="text-gold" />
+              ) : (
+                <Icon name="spot" size={iconSize} />
+              )}
+
+              {showPower && st !== 'solved' && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-gold bg-panel text-gold">
+                  <Icon name={r.powerUp === 'vowel' ? 'vowel' : 'reveal'} size={11} strokeWidth={2} />
+                </span>
+              )}
+              {showMeta && (
+                <span
+                  className={[
+                    'absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border',
+                    collected ? 'border-meta bg-meta text-cream' : 'border-meta bg-panel text-meta',
+                  ].join(' ')}
+                >
+                  <Icon name="meta" size={11} strokeWidth={2} />
+                </span>
+              )}
+            </button>
+          </div>
         );
       })}
     </div>

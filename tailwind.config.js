@@ -74,7 +74,7 @@ export default {
         shake: 'shake 0.4s ease-in-out',
         pop: 'pop 0.18s ease-out',
         flipIn: 'flipIn 0.4s ease-out both',
-        riseIn: 'riseIn 0.35s ease-out both',
+        riseIn: 'riseIn 0.4s ease-out backwards',
         fadeIn: 'fadeIn 0.4s ease-out both',
         stampIn: 'stampIn 0.5s cubic-bezier(.2,.8,.2,1) both',
         glowpulse: 'glowpulse 2.4s ease-in-out infinite',
