@@ -65,6 +65,10 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-3px)' },
         },
+        draw: {
+          '0%': { 'stroke-dashoffset': '1' },
+          '100%': { 'stroke-dashoffset': '0' },
+        },
       },
       animation: {
         shake: 'shake 0.4s ease-in-out',

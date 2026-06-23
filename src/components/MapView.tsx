@@ -12,8 +12,16 @@ const TOP_PAD = 64;
 const ROW_GAP = 104;
 const BOTTOM_PAD = 56;
 
+// X position on a 0..100 scale (matches both the SVG viewBox and the nodes' left%).
 function xPct(col: number): number {
   return 8 + (col / 6) * 84;
+}
+
+// Deterministic ±1 from a string, so each route always bows the same way.
+function bowSign(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return h % 2 === 0 ? 1 : -1;
 }
 
 export default function MapView({ game, onOpenRoom }: Props) {
@@ -30,26 +38,37 @@ export default function MapView({ game, onOpenRoom }: Props) {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-2xl px-2" style={{ height }}>
-      {/* Routes between rooms */}
-      <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
+    <div className="relative mx-auto w-full max-w-2xl" style={{ height }}>
+      {/* Routes between rooms — gently curved, hand-inked, drawn in on load */}
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        viewBox={`0 0 100 ${height}`}
+        preserveAspectRatio="none"
+      >
         {rooms.flatMap((r) =>
           r.next.map((nid) => {
             const child = game.byId.get(nid);
             if (!child) return null;
             const active = game.isSolved(r.id);
+            const x1 = xPct(r.col);
+            const y1 = yPx(r.row);
+            const x2 = xPct(child.col);
+            const y2 = yPx(child.row);
+            const mx = (x1 + x2) / 2 + bowSign(r.id + nid) * 6;
+            const my = (y1 + y2) / 2 + 6;
             return (
-              <line
+              <path
                 key={`${r.id}-${nid}`}
-                x1={`${xPct(r.col)}%`}
-                y1={yPx(r.row)}
-                x2={`${xPct(child.col)}%`}
-                y2={yPx(child.row)}
-                stroke={active ? '#8a3b2e' : '#b09a6b'}
-                strokeWidth={active ? 3 : 2}
+                d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
+                fill="none"
+                stroke={active ? '#8a3b2e' : '#a8915f'}
+                strokeWidth={active ? 2.4 : 1.8}
                 strokeLinecap="round"
-                strokeDasharray="2 7"
-                opacity={active ? 0.95 : 0.55}
+                vectorEffect="non-scaling-stroke"
+                pathLength={1}
+                opacity={active ? 0.95 : 0.5}
+                style={{ strokeDasharray: 1, animationDelay: `${250 + r.row * 90}ms` }}
+                className="animate-[draw_0.9s_ease-out_both]"
               />
             );
           }),
@@ -80,7 +99,7 @@ export default function MapView({ game, onOpenRoom }: Props) {
             disabled={st === 'locked'}
             onClick={() => onOpenRoom(r.id)}
             className={[base, look, r.isFinal ? 'ring-2 ring-gold ring-offset-2 ring-offset-paper' : ''].join(' ')}
-            style={{ left, top, animationDelay: `${Math.min(i * 28, 500)}ms` }}
+            style={{ left, top, animationDelay: `${Math.min(i * 26, 520)}ms` }}
             title={st === 'locked' ? 'Locked' : r.isFinal ? 'Final chamber' : r.clue}
           >
             {st === 'solved' ? (
