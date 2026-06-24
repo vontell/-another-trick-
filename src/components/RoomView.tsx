@@ -9,6 +9,7 @@ import { useTyping } from './useTyping';
 import { computeFeedback, accumulate } from './wordleFeedback';
 import FoundLetters from './FoundLetters';
 import { enumerationText } from '../game/bridges';
+import { track } from '../services/analytics';
 
 interface Props {
   room: ResolvedRoom;
@@ -74,7 +75,9 @@ export default function RoomView({
       setStatus('correct');
       setFeedback(undefined);
       if (wasFirstTry && room.powerUp) setJustEarned(room.powerUp);
+      track('room_solved', { puzzle_id: game.resolved.id, first_try: wasFirstTry });
     } else {
+      track('room_missed', { puzzle_id: game.resolved.id });
       setStatus('wrong');
       if (assistWrongLetters) {
         const fb = computeFeedback(cells, room.answer);
@@ -143,10 +146,16 @@ export default function RoomView({
   });
 
   const useReveal = () => {
-    if (game.revealLetter(room.id) !== null) onTokenUsed?.('reveal');
+    if (game.revealLetter(room.id) !== null) {
+      track('powerup_used', { kind: 'reveal' });
+      onTokenUsed?.('reveal');
+    }
   };
   const useVowel = () => {
-    if (game.vowelFlare(room.id)) onTokenUsed?.('vowel');
+    if (game.vowelFlare(room.id)) {
+      track('powerup_used', { kind: 'vowel' });
+      onTokenUsed?.('vowel');
+    }
   };
 
   const newlyUnlocked = solved ? room.next.filter((id) => !game.isSolved(id)) : [];

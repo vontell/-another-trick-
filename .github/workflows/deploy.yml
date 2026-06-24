@@ -28,6 +28,13 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: npm run build
+        env:
+          # Optional integrations — set these as repository secrets to enable
+          # them. Missing/empty values make the related feature no-op safely.
+          VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
+          VITE_POSTHOG_HOST: ${{ secrets.VITE_POSTHOG_HOST }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - uses: actions/configure-pages@v5
         with:
           # Auto-enable Pages (source = GitHub Actions) on first run.

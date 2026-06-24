@@ -12,6 +12,8 @@ import SettingsDialog from './components/SettingsDialog';
 import PuzzlesDialog from './components/PuzzlesDialog';
 import Icon from './components/Icon';
 import { useIsDesktop } from './components/useIsDesktop';
+import { track } from './services/analytics';
+import { recordPlay, recordMazeSolved, recordMetaSolved } from './services/globalStats';
 
 const DIFF_STYLE: Record<Difficulty, string> = {
   Easy: 'bg-good/20 text-good',
@@ -41,6 +43,22 @@ function GameScreen({
   const [openRoomId, setOpenRoomId] = useState<string | null>(null);
   const [showMeta, setShowMeta] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Count this player opening the puzzle (global stats) and log the event.
+  useEffect(() => {
+    track('puzzle_opened', { puzzle_id: level.id, difficulty: level.difficulty });
+    void recordPlay(level.id);
+  }, [level.id, level.difficulty]);
+
+  // Count clearing the maze the moment the final room is solved.
+  const mazeRecorded = useRef(game.finalSolved);
+  useEffect(() => {
+    if (game.finalSolved && !mazeRecorded.current) {
+      mazeRecorded.current = true;
+      track('maze_completed', { puzzle_id: level.id, maze_ms: Math.round(game.progress.mazeMs) });
+      void recordMazeSolved(level.id);
+    }
+  }, [game.finalSolved, game.progress.mazeMs, level.id]);
 
   // Intro: begin at the top (final chamber) and pan down to the start as the
   // tree fills in. Returning players / reduced-motion just land at the bottom.
@@ -92,6 +110,17 @@ function GameScreen({
         mazeMs: game.progress.mazeMs,
         metaMs: game.progress.metaMs,
         firstTries: game.firstTries,
+        mistakes: game.progress.mistakes,
+      });
+      track('meta_solved', {
+        puzzle_id: level.id,
+        maze_ms: Math.round(game.progress.mazeMs),
+        meta_ms: Math.round(game.progress.metaMs),
+        mistakes: game.progress.mistakes,
+      });
+      void recordMetaSolved(level.id, {
+        mazeMs: game.progress.mazeMs,
+        metaMs: game.progress.metaMs,
         mistakes: game.progress.mistakes,
       });
     }
@@ -250,7 +279,15 @@ export default function App() {
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <button className={iconBtn} onClick={() => setShowPuzzles(true)} title="Daily puzzles" aria-label="Daily puzzles">
+            <button
+              className={iconBtn}
+              onClick={() => {
+                track('puzzles_browsed');
+                setShowPuzzles(true);
+              }}
+              title="Daily puzzles"
+              aria-label="Daily puzzles"
+            >
               <Icon name="calendar" size={17} />
             </button>
             <button className={iconBtn} onClick={() => setShowStats(true)} title="Stats" aria-label="Stats">
@@ -259,7 +296,15 @@ export default function App() {
             <button className={iconBtn} onClick={() => setShowSettings(true)} title="Settings" aria-label="Settings">
               <Icon name="sliders" size={17} />
             </button>
-            <button className={iconBtn} onClick={() => setShowHelp(true)} title="How to play" aria-label="Help">
+            <button
+              className={iconBtn}
+              onClick={() => {
+                track('help_opened');
+                setShowHelp(true);
+              }}
+              title="How to play"
+              aria-label="Help"
+            >
               <Icon name="help" size={18} />
             </button>
           </div>
@@ -280,13 +325,17 @@ export default function App() {
           aggregate={aggregateProgress(LEVELS.map((l) => l.id))}
           stats={store.stats}
           levels={LEVELS}
+          currentId={puzzleId}
           onClose={() => setShowStats(false)}
         />
       )}
       {showSettings && (
         <SettingsDialog
           settings={store.settings}
-          setSettings={setSettings}
+          setSettings={(patch) => {
+            track('settings_changed', patch);
+            setSettings(patch);
+          }}
           onResetStats={resetStats}
           onClose={() => setShowSettings(false)}
         />

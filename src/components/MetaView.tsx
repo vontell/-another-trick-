@@ -7,6 +7,7 @@ import { useTyping } from './useTyping';
 import { computeFeedback, accumulate } from './wordleFeedback';
 import FoundLetters from './FoundLetters';
 import { enumerationText } from '../game/bridges';
+import { track } from '../services/analytics';
 
 interface Props {
   game: ReturnType<typeof useGame>;
@@ -48,6 +49,7 @@ export default function MetaView({ game, onClose, assistWrongLetters = false }: 
       setStatus('correct');
       setFeedback(undefined);
     } else {
+      track('meta_missed', { puzzle_id: game.resolved.id });
       setStatus('wrong');
       if (assistWrongLetters) {
         const fb = computeFeedback(cells, meta.answer);

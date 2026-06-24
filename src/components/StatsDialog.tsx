@@ -1,5 +1,6 @@
 import Modal from './Modal';
 import Icon from './Icon';
+import GlobalStats from './GlobalStats';
 import type { Aggregate, Stats } from '../game/store';
 import { formatMs } from '../game/store';
 import type { Level } from '../game/types';
@@ -8,13 +9,17 @@ export default function StatsDialog({
   aggregate,
   stats,
   levels,
+  currentId,
   onClose,
 }: {
   aggregate: Aggregate;
   stats: Stats;
   levels: Level[];
+  currentId: string;
   onClose: () => void;
 }) {
+  const current = levels.find((l) => l.id === currentId);
+  const currentStat = stats.perLevel[currentId];
   const tiles: [string, string | number][] = [
     ['Levels completed', aggregate.levelsCompleted],
     ['Rooms solved', aggregate.roomsSolved],
@@ -27,6 +32,15 @@ export default function StatsDialog({
   return (
     <Modal title="Your stats" onClose={onClose}>
       <div className="space-y-5">
+        {current && (
+          <GlobalStats
+            puzzleId={current.id}
+            title={current.title}
+            yourMazeMs={currentStat?.bestMazeMs}
+            yourMetaMs={currentStat?.bestMetaMs}
+          />
+        )}
+
         <div className="grid grid-cols-2 gap-2">
           {tiles.map(([label, value]) => (
             <div key={label} className="rounded-lg bg-panel2 px-3 py-2">

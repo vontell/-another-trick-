@@ -26,10 +26,43 @@ Works on desktop and mobile (responsive, touch-friendly, tap a square to type).
 
 Progress is saved locally in the browser, so you can close the tab and return.
 
+## Analytics & global stats (optional)
+
+Two integrations are wired in but **off by default** — the app runs identically
+with or without them, and their SDKs are code-split so nothing is even fetched
+when keys are absent.
+
+- **PostHog** — anonymous, aggregate product metrics (puzzle opened, room
+  solved/missed, power-up used, maze/meta completed, dialogs opened). No person
+  profiles, no autocapture, respects Do-Not-Track.
+- **Supabase** — shared, anonymous **global stats** shown in the Stats panel:
+  today's play / maze-solved / meta-cracked counts and a solve-time distribution
+  with your own time highlighted. No accounts and no per-user rows; the client
+  only bumps counters and appends anonymous run times (de-duped per device via
+  `localStorage`).
+
+### Setup
+
+1. Copy [`.env.example`](.env.example) to `.env.local` and fill in the values
+   you have (any subset works).
+2. For global stats, create a Supabase project and run
+   [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor. It creates the
+   counter/run tables with RLS locked down and exposes only four
+   `security definer` RPCs to the `anon` role — so the publishable anon key is
+   safe to ship in a static build.
+3. In CI, set the same `VITE_*` values as **repository secrets**; the deploy
+   workflow passes them into the production build.
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` | PostHog project key + ingestion host |
+| `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` | Supabase project URL + anon key |
+
 ## Tech
 
-- **Vite + React + TypeScript + Tailwind CSS** — a static single-page app, no
-  backend required.
+- **Vite + React + TypeScript + Tailwind CSS** — a static single-page app. The
+  core game needs no backend; the optional integrations above add analytics and
+  shared stats.
 - Level content lives in [`src/game/levels.ts`](src/game/levels.ts). Bridges are
   *derived* from the answers + map graph at load time
   ([`src/game/bridges.ts`](src/game/bridges.ts)), so authoring a level just means
